@@ -8,7 +8,7 @@ namespace TinyLang.CLI.Types
     {
         CommandType CommandType { get; }
 
-        IReadOnlyDictionary<CommandArgument, string> Arguments { get; }
+        IReadOnlyDictionary<string, string> Arguments { get; }
 
         ICommandResult Execute();
     }

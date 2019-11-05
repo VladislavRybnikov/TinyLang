@@ -6,11 +6,6 @@ namespace TinyLang.CLI.Types
 {
     public enum CommandType
     {
-        Build, Run, Exit, Clear
-    }
-
-    public enum CommandArgument
-    {
-        Path, Output
+        Build, Run, Exit, Clear, Help, Config
     }
 }

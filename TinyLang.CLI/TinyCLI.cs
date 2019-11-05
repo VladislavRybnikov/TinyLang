@@ -7,13 +7,24 @@ using TinyLang.Compiler.Core;
 
 namespace TinyLang.CLI
 {
+    public enum TinyCliMode { Bash, Interactive }
+
     public class TinyCLI
     {
+        private static TinyCliMode _mode;
+
         public static string Input()
         {
-            CILAssemblyCreator.Print("Hello");
-            Print("$ ");
+            var inputSign = _mode == TinyCliMode.Bash ? "$" : ">>>";
+
+            Print($"{inputSign} ");
             return Console.ReadLine();
+        }
+
+        public static void SetMode(TinyCliMode mode)
+        {
+            _mode = mode;
+            Print($"Mode changed to {mode.ToString()}", newLine: true);
         }
 
         public static void Print(ICommandResult result) =>
@@ -37,8 +48,18 @@ namespace TinyLang.CLI
             Print("TinyLang Command Line Interface", color: ConsoleColor.Green, newLine: true);
             while (true)
             {
-                Print(CommandParser.Parse(Input()).Execute());
-                Task.Delay(1);
+                try
+                {
+                    Print(CommandParser.Parse(Input()).Execute());
+                }
+                catch
+                {
+                    Print("Error", ConsoleColor.DarkRed, true);
+                }
+                finally
+                {
+                    Task.Delay(1);
+                }
             }
         }
 
