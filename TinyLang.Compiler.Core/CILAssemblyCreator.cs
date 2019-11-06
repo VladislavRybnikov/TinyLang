@@ -17,5 +17,10 @@ namespace TinyLang.Compiler.Core
 
             system.GetMethod("Print").Invoke(null, new object[]{ message });
         }
+
+        public static void LoadSingleScript(string script)
+        {
+
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using TinyLang.CLI.Types;
+using TinyLang.Compiler.Core.Parsing;
 
 namespace TinyLang.CLI
 {
@@ -8,7 +9,8 @@ namespace TinyLang.CLI
     {
         static void Main(string[] args)
         {
-            TinyCLI.Run();
+            //TinyCLI.Run();
+            SingleScriptParser.Parse("a = 4 + b");
         }
 
     }
