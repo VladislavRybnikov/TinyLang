@@ -70,13 +70,18 @@ namespace TinyLang.CLI.Types
         public ConfigCommand(IReadOnlyDictionary<string, string> args) : base(CommandType.Config, args)
         {
         }
+        private static bool IsValidValue(string s, string expected) => s == expected || expected.StartsWith(s);
 
         public override ICommandResult Execute()
         {
-            (Arguments.FirstOrDefault() switch
+            var arg = Arguments.FirstOrDefault();
+
+            (arg switch
             {
-                { Key: "mode", Value: "bash" } => () => TinyCLI.SetMode(TinyCliMode.Bash),
-                { Key: "mode", Value: "interactive" } => () => TinyCLI.SetMode(TinyCliMode.Interactive),
+                var (k, v) when IsValidValue(k, "mode") && IsValidValue(v, "bash")  
+                                 => () => TinyCLI.SetMode(TinyCliMode.Bash),
+                var (k, v) when IsValidValue(k, "mode") && IsValidValue(v, "interactive")
+                                => () => TinyCLI.SetMode(TinyCliMode.Interactive),
                 _ => (Action) (() => TinyCLI.Print("Wrong arguments"))
             })();
 

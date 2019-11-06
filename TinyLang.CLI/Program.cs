@@ -9,8 +9,7 @@ namespace TinyLang.CLI
     {
         static void Main(string[] args)
         {
-            //TinyCLI.Run();
-            SingleScriptParser.Parse("a = 4 + b");
+            TinyCLI.Run();
         }
 
     }

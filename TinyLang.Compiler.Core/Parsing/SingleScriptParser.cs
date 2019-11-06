@@ -3,37 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using LanguageExt;
 using LanguageExt.Parsec;
+using TinyLang.Compiler.Core.Parsing.Types;
 using static LanguageExt.Prelude;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using static LanguageExt.Parsec.Expr;
 using static LanguageExt.Parsec.Token;
+using static LanguageExt.Parsec.GenTokenParser;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
-    abstract class Term { }
-
-    class Word : Term
-    {
-        public readonly string Value;
-        public Word(string value) => Value = value;
-    }
-
-    class Number : Term
-    {
-        public readonly int Value;
-        public Number(int value) => Value = value;
-    }
-
-    class Symbol : Term
-    {
-        public readonly char Value;
-
-        public Symbol(char value) => Value = value;
-    }
-
     public class SingleScriptParser
     {
+        // EXAMPLE
         public static void Parse(string script)
         {
             var parser = many1(letter);
@@ -63,5 +45,6 @@ namespace TinyLang.Compiler.Core.Parsing
 
             var result = parse(variableAsign, script);
         }
+
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TinyLang.CLI.Types;
 using TinyLang.Compiler.Core;
+using TinyLang.Compiler.Core.Parsing;
 
 namespace TinyLang.CLI
 {
@@ -50,7 +51,22 @@ namespace TinyLang.CLI
             {
                 try
                 {
-                    Print(CommandParser.Parse(Input()).Execute());
+                    if (_mode == TinyCliMode.Bash)
+                    {
+                        Print(CommandParser.Parse(Input()).Execute());
+                    }
+                    else
+                    {
+                        var input = Input();
+                        try
+                        {
+                            Print($"{TinyInteractive.Execute(input)}", ConsoleColor.Green, true);
+                        }
+                        catch
+                        {
+                            Print(CommandParser.Parse(input).Execute());
+                        }
+                    }
                 }
                 catch
                 {

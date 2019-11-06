@@ -22,14 +22,35 @@ namespace TinyLang.CLI
             Regex regex = new Regex(@"([\w]*)*( --[\w]*)*(=[\w]*)*");
             var matches = regex.Matches(input);
 
-            return CommandFactory.Create(GetCommandType(matches[0]), GetCommandArgs(matches));
+            IReadOnlyDictionary<string, string> dict = null;
+            var commandType = GetCommandType(matches[0]);
+
+            try
+            {
+                dict = GetCommandArgs(matches);
+            }
+            catch { }
+
+            return CommandFactory.Create(GetCommandType(matches[0]), dict);
         }
 
         private static CommandType GetCommandType(Match match) 
-            => _aliasesToCmds.FirstOrDefault(x => x.aliases.Any(x => match.Groups[0].Value.Contains(x))).command;
+            => _aliasesToCmds.FirstOrDefault(x => x.aliases.Any(y => match.Groups[0].Value.Contains(y))).command;
 
         private static IReadOnlyDictionary<string, string> GetCommandArgs(MatchCollection matches) 
-            => matches.ToDictionary(k => k.Groups[2].Value.Replace("--", string.Empty).Trim(),
-                v => v.Groups[3].Value.Replace("=", string.Empty).Trim());
+            => matches.ToDictionary(k => GetValueOrDefault(k.Groups, 2).Replace("--", string.Empty).Trim(),
+                v => GetValueOrDefault(v.Groups, 3).Replace("=", string.Empty).Trim());
+
+        private static string GetValueOrDefault(GroupCollection groups, int index)
+        {
+            var result = string.Empty;
+            try
+            {
+                result = groups[index].Value;
+            }
+            finally { }
+
+            return result;
+        }
     }
 }
