@@ -16,7 +16,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         public const int UnaryPriority = 1;
         public const int BinaryPriority = 2;
 
-        static readonly Parser<bool> boolParser = from w in asString(from w in many1(letter) from sp in spaces select w)
+        static readonly Parser<bool> boolParser = from w in asString(from w in many1(letter) from sc in many(symbolchar) from sp in spaces select w)
                                                   where string.Equals(w, "true", StringComparison.OrdinalIgnoreCase) 
                                                   || string.Equals(w, "false", StringComparison.OrdinalIgnoreCase)
                                                   select bool.Parse(w);

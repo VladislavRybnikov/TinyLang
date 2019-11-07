@@ -12,7 +12,7 @@ namespace TinyLang.CLI
 
     public class TinyCLI
     {
-        private static TinyCliMode _mode;
+        private static TinyCliMode _mode = TinyCliMode.Interactive;
 
         public static string Input()
         {

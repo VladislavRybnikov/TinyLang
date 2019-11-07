@@ -30,11 +30,19 @@ namespace TinyLang.Compiler.Core
             var mathExprParserAsString = from i in mathExprParser select i.ToString();
             var logicExprParserAsString = from b in logicExprParser select b.ToString();
 
-            var parser = either(logicExprParserAsString, mathExprParserAsString);
+            var parser = either(mathExprParserAsString, logicExprParserAsString);
 
-            var parsed = parse(parser, script);
+            //var parsed2 = parse(parser, script);
+
+            var parsed = ParseEither(mathExprParserAsString, logicExprParserAsString, script);
 
             return parsed.ToOption().IfNone(() => throw new Exception());
+        }
+
+        private static ParserResult<T> ParseEither<T>(Parser<T> p1, Parser<T> p2, string str)
+        {
+            var parsedFirst = parse(p1, str);
+            return parsedFirst.IsFaulted ? parse(p2, str) : parsedFirst;
         }
     }
 }
