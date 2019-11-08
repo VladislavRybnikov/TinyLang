@@ -60,7 +60,11 @@ namespace TinyLang.CLI
                         var input = Input();
                         try
                         {
-                            Print($"{TinyInteractive.Execute(input)}", ConsoleColor.Green, true);
+                            var res = TinyInteractive.Execute(input);
+                            if (!res.IsEmpty)
+                            {
+                                Print($"{res.Value}", ConsoleColor.Green, true);
+                            }
                         }
                         catch(Exception e )
                         {

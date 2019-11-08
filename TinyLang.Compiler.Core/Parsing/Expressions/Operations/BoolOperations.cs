@@ -21,5 +21,37 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
                 return $"And({Left}, {Right})";
             }
         }
+
+        public class OrExpr : Expr 
+        {
+            public Expr Left { get; }
+            public Expr Right { get; }
+
+            public OrExpr(Expr left, Expr right)
+            {
+                Left = left;
+                Right = right;
+            }
+
+            public override string ToString()
+            {
+                return $"Or({Left}, {Right})";
+            }
+        }
+
+        public class NotExpr : Expr 
+        {
+            public Expr Value { get; }
+
+            public NotExpr(Expr value)
+            {
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return $"Not({Value})";
+            }
+        }
     }
 }

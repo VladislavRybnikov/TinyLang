@@ -17,9 +17,10 @@ namespace TinyLang.Compiler.Core
 {
     public static class TinyInteractive
     {
-        public static string Execute(string script)
+        public static EvaluationResult Execute(string script)
         {
-            return Evaluate(Tokenize(script)).Value.ToString();
+            var tokenized = Tokenize(script);
+            return Evaluate(tokenized);
         }
 
         public static Expr Tokenize(string script)
