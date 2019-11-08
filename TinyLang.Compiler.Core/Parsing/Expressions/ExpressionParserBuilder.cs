@@ -14,7 +14,18 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
     public delegate Operator<T> Unary<T>(string name, Func<T, T> f);
 
-    public class ExpressionParserBuilder<T>
+    public interface IExpressionParserBuilder<T>
+    {
+        IExpressionParserBuilder<T> WithBinaryOperation
+            (string name, Assoc assoc, Func<T, T, T> operation, int priority);
+
+        IExpressionParserBuilder<T> WithUnaryOperation
+            (string name, UnaryOperationType type, Func<T, T> operation, int priority);
+
+        Parser<T> Build();
+    }
+
+    public class ExpressionParserBuilder<T> : IExpressionParserBuilder<T>
     {
         private readonly Parser<T> _baseParser;
 
@@ -42,7 +53,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             _reservedOp = reservedOp;
         }
 
-        public ExpressionParserBuilder<T> WithBinaryOperation(string name, Assoc assoc, Func<T, T, T> operation, int priority)
+        public IExpressionParserBuilder<T> WithBinaryOperation(string name, Assoc assoc, Func<T, T, T> operation, int priority)
         {
             if (_operators.TryGetValue(priority, out var list))
                 list.Add(binary(name, operation, assoc));
@@ -52,7 +63,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             return this;
         }
 
-        public ExpressionParserBuilder<T> WithUnaryOperation(string name, UnaryOperationType type, Func<T, T> operation, int priority)
+        public IExpressionParserBuilder<T> WithUnaryOperation(string name, UnaryOperationType type, Func<T, T> operation, int priority)
         {
             var @operator =
                 (type switch { UnaryOperationType.Prefix => prefix, _ => postfix })(name,
@@ -68,15 +79,19 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
         public Parser<T> Build()
         {
-            var table = _operators.Select(x => x.Value.ToArray()).ToArray();
+            var table = _operators.OrderBy(x => x.Key).Select(x => x.Value.ToArray()).ToArray();
 
-            var natural = _baseParser;
+            Parser<T> expr = null;
 
-            var expr = buildExpressionParser(table, natural).label("simple expression");
+            // Build up the expression term
+            var term = either(
+                attempt(_baseParser),
+                TinyLanguage.TokenParser.Parens(lazyp(() => expr)));
 
-            var term = either(TinyLanguage.TokenParser.Parens(expr), natural).label("term");
+            // Build the expression parser
+            expr = buildExpressionParser(table, term).label("expression");
 
-            return buildExpressionParser(table, term).label("expression");
+            return expr;
         }
     }
 }

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyLang.Compiler.Core", "TinyLang.Compiler.Core\TinyLang.Compiler.Core.csproj", "{B6B50E70-110F-41D1-9191-A8E5CE1FD5F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyLang.Compiler.Core", "TinyLang.Compiler.Core\TinyLang.Compiler.Core.csproj", "{B6B50E70-110F-41D1-9191-A8E5CE1FD5F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyLang.CLI", "TinyLang.CLI\TinyLang.CLI.csproj", "{F7797F81-BAAB-4FE0-807B-68E966135861}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyLang.CLI", "TinyLang.CLI\TinyLang.CLI.csproj", "{F7797F81-BAAB-4FE0-807B-68E966135861}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D447A1FD-E851-4171-A574-FEC6B62BE548}"
 	ProjectSection(SolutionItems) = preProject

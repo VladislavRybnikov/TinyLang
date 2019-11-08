@@ -62,15 +62,16 @@ namespace TinyLang.CLI
                         {
                             Print($"{TinyInteractive.Execute(input)}", ConsoleColor.Green, true);
                         }
-                        catch
+                        catch(Exception e )
                         {
-                            Print(CommandParser.Parse(input).Execute());
+                            Print($"Error: {e.Message}", ConsoleColor.DarkRed, true);
+                            //Print(CommandParser.Parse(input).Execute());
                         }
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-                    Print("Error", ConsoleColor.DarkRed, true);
+                    Print($"Error: {ex.Message}", ConsoleColor.DarkRed, true);
                 }
                 finally
                 {
