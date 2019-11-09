@@ -37,22 +37,6 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             }
         }
 
-        public class EqualsExpr : Expr 
-        {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public EqualsExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"Equals({Left}, {Right})";
-            }
-        }
-
         public class IfExpr : Expr
         {
             public Expr Condition { get; }

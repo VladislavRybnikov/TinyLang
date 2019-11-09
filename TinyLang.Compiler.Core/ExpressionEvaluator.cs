@@ -5,6 +5,7 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.BoolOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 using System.Collections.Concurrent;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperations;
 
 namespace TinyLang.Compiler.Core
 {
@@ -50,7 +51,12 @@ namespace TinyLang.Compiler.Core
                 AndExpr and => Res((bool) Evaluate(and.Left).Value && (bool) Evaluate(and.Right).Value),
                 OrExpr or => Res((bool)Evaluate(or.Left).Value || (bool)Evaluate(or.Right).Value),
                 NotExpr not => Res(!(bool)Evaluate(not.Value).Value),
-                EqualsExpr eq => Res(Evaluate(eq.Left).Value.Equals(Evaluate(eq.Right).Value)),
+                EqExpr eq => Res(Evaluate(eq.Left).Value.Equals(Evaluate(eq.Right).Value)),
+                NotEqExpr notEq => Res(!Evaluate(notEq.Left).Value.Equals(Evaluate(notEq.Right).Value)),
+                LessExpr less => Compare(Evaluate(less.Left), Evaluate(less.Right), (l, r) => l < r),
+                LessOrEqExpr lessOrEq => Compare(Evaluate(lessOrEq.Left), Evaluate(lessOrEq.Right), (l, r) => l <= r),
+                MoreExpr more => Compare(Evaluate(more.Left), Evaluate(more.Right), (l, r) => l > r),
+                MoreOrEqExpr moreOrEq => Compare(Evaluate(moreOrEq.Left), Evaluate(moreOrEq.Right), (l, r) => l >= r),
                 IfExpr @if => @if.Then switch 
                 {
                     ChooseExpr ch => (bool)Evaluate(@if.Condition).Value ? Evaluate(ch.Left) : Evaluate(ch.Right),
@@ -64,6 +70,16 @@ namespace TinyLang.Compiler.Core
         {
             _vars[name] = value;
             return Empty;
+        }
+
+        private static EvaluationResult Compare(EvaluationResult a, EvaluationResult b, Func<int, int, bool> comparer)
+        {
+            if(a.Value is int aInt && b.Value is int bInt) 
+            {
+                return Res(comparer(aInt, bInt));
+            }
+
+            throw new Exception("Can not compare this objects");
         }
     }
 }
