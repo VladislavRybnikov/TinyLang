@@ -4,6 +4,7 @@ using System.Text;
 using LanguageExt.Parsec;
 using static LanguageExt.Prelude;
 using static LanguageExt.Parsec.Token;
+using LanguageExt;
 
 namespace TinyLang.Compiler.Core
 {
@@ -15,7 +16,7 @@ namespace TinyLang.Compiler.Core
 
         static TinyLanguage()
         {
-            LanguageDef = Language.JavaStyle;
+            LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(new[] { "if", "elif", "else" }));
         }
     }
 }

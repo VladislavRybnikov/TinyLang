@@ -10,6 +10,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
     {
         public static Expr Bool(bool value) => new BoolExpr(value);
         public static Expr Int(int value) => new IntExpr(value);
+        public static Expr Str(string value) => new StrExpr(value);
         public static Expr Add(Expr left, Expr right) => new AddExpr(left, right);
         public static Expr Div(Expr left, Expr right) => new DivExpr(left, right);
         public static Expr Subtr(Expr left, Expr right) => new SubtrExpr(left, left);

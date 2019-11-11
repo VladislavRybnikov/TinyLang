@@ -38,13 +38,18 @@ namespace TinyLang.Compiler.Core
             {
                 IntExpr i => Res(i.Value),
                 BoolExpr b => Res(b.Value),
+                StrExpr str => Res(str.Value),
                 VarExpr v => Res(_vars.TryGetValue(v.Name, out var val) ? val : throw new Exception($"'{v.Name}' is not defined")),
                 AssignExpr a => a.Assigment switch 
                 {
                     VarExpr av => Set(av.Name, Evaluate(a.Value).Value),
                     _ => throw new Exception("Opertaion '=' is not allowed here")
                 },
-                AddExpr add => Res((int) Evaluate(add.Left).Value + (int) Evaluate(add.Right).Value),
+                AddExpr add => Evaluate(add.Left).Value switch
+                {
+                    string s => Res($"{s}{Evaluate(add.Right).Value}"),
+                     object obj => Res((int)obj + (int)Evaluate(add.Right).Value),
+                },
                 SubtrExpr subtr => Res((int) Evaluate(subtr.Left).Value - (int)Evaluate(subtr.Right).Value),
                 DivExpr div => Res((int)Evaluate(div.Left).Value / (int)Evaluate(div.Right).Value),
                 MulExpr mult => Res((int) Evaluate(mult.Left).Value * (int) Evaluate(mult.Right).Value),

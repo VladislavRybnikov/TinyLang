@@ -6,26 +6,26 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
     public static class GeneralOperations
     {
-        public class VarExpr : Expr 
+        public class VarExpr : Expr
         {
             public string Name { get; }
 
-            public VarExpr(string name) 
+            public VarExpr(string name)
             {
                 Name = name;
             }
 
-            public override string ToString() 
+            public override string ToString()
             {
                 return $"Var({Name})";
             }
         }
 
-        public class AssignExpr : Expr 
+        public class AssignExpr : Expr
         {
             public Expr Assigment { get; }
             public Expr Value { get; }
-            public AssignExpr(Expr assigment, Expr value) 
+            public AssignExpr(Expr assigment, Expr value)
             {
                 Assigment = assigment;
                 Value = value;
@@ -49,7 +49,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
                 Then = then;
             }
 
-            public override string ToString() 
+            public override string ToString()
             {
                 return $"If({Condition}, {Then})";
             }
@@ -60,7 +60,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             public Expr Left { get; }
             public Expr Right { get; }
 
-            public ChooseExpr(Expr left, Expr right) 
+            public ChooseExpr(Expr left, Expr right)
             {
                 Left = left;
                 Right = right;
@@ -69,6 +69,21 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             public override string ToString()
             {
                 return $"Choose({Left}, {Right})";
+            }
+        }
+
+        public class ArrExpr : Expr
+        {
+            public Expr[] Values { get; }
+
+            public ArrExpr(Expr[] values)
+            {
+                Values = values;
+            }
+
+            public override string ToString()
+            {
+                return $"Arr({string.Join<Expr>(", ", Values)})";
             }
         }
     }
