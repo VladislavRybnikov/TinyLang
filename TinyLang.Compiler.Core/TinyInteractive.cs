@@ -1,6 +1,7 @@
 ﻿using TinyLang.Compiler.Core.Parsing;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using static TinyLang.Compiler.Core.ExpressionEvaluator;
+using static TinyLang.Compiler.Core.TinyLanguage;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 
 namespace TinyLang.Compiler.Core
@@ -15,7 +16,7 @@ namespace TinyLang.Compiler.Core
 
         public static Expr Parse(string line)
         {
-            var exprParserBuilder = new ExpressionParserBuilder<Expr>(Predefined.ExprValueParser, TinyLanguage.TokenParser.ReservedOp);
+            var exprParserBuilder = new ExpressionParserBuilder<Expr>(ExprValueParser, TokenParser.ReservedOp);
             var tokenizer = new ExprTokenizer();
 
             var parser = new ExprParser(exprParserBuilder, tokenizer);
@@ -26,7 +27,7 @@ namespace TinyLang.Compiler.Core
         {
             get
             {
-                var exprParserBuilder = new ExpressionParserBuilder<Expr>(Predefined.ExprValueParser, TinyLanguage.TokenParser.ReservedOp);
+                var exprParserBuilder = new ExpressionParserBuilder<Expr>(ExprValueParser, TokenParser.ReservedOp);
                 var tokenizer = new ExprTokenizer();
 
                 var parser = new ExprParser(exprParserBuilder, tokenizer);

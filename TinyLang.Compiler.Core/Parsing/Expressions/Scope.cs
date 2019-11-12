@@ -64,38 +64,4 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         }
     }
 
-    public class If : ScopedExpr 
-    {
-        public Expr Predicate { get; }
-        public If(Expr predicate)
-        {
-            Predicate = predicate;
-        }
-
-        public override string ToString()
-        {
-            return $"If(Predicate({Predicate}), {Scope})";
-        }
-    }
-    public class Elif : ScopedExpr 
-    {
-        public Expr Predicate { get; }
-        public Elif(Expr predicate)
-        {
-            Predicate = predicate;
-        }
-
-        public override string ToString()
-        {
-            return $"Elif(Predicate({Predicate}), {Scope})";
-        }
-    } 
-
-    public class Else : ScopedExpr 
-    {
-        public override string ToString() 
-        {
-            return $"Else({Scope})";
-        } 
-    }
 }

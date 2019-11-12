@@ -18,11 +18,9 @@ namespace TinyLang.CLI
                 "if(x == y){\n" +
                 "z=x + y\n" +
                 "a = z + x + y}\n" +
-                "elif(true){\n" +
-                "b = 22" +
-                "}\n" +
                 "else{" +
-                "}");
+                "if(true){x = x + 1}" + 
+                "}\n" );
             parsed.ToList().ForEach(Console.WriteLine);
         }
 
