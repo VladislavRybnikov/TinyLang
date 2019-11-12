@@ -13,14 +13,17 @@ namespace TinyLang.CLI
         {
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
-                "x = 5\n" +
-                "y = x + 1\n" +
-                "if(x == y){\n" +
-                "z=x + y\n" +
-                "a = z + x + y}\n" +
-                "else{" +
-                "if(true){x = x + 1}" + 
-                "}\n" );
+                @"x = 5
+                     y = x + 1
+                     if(x == y){
+                        z=x + y
+                        a = z + x + y
+                     }
+                     else{
+                        if(true){
+                            x = x + 1
+                         }
+                     }" );
             parsed.ToList().ForEach(Console.WriteLine);
         }
 
