@@ -9,5 +9,7 @@ namespace TinyLang.Compiler.Core.Parsing
         public const string If = "if";
         public const string Else = "else";
         public const string Elif = "elif";
+        public const string While = "while";
+        public const string Do = "do";
     }
 }

@@ -23,7 +23,12 @@ namespace TinyLang.CLI
                         if(true){
                             x = x + 1
                          }
-                     }" );
+                        while(true){
+                            if(false)
+                            {
+                            }
+                        }
+                     }");
             parsed.ToList().ForEach(Console.WriteLine);
         }
 

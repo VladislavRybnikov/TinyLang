@@ -2,6 +2,10 @@
 using LanguageExt.Parsec;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
+using static LanguageExt.Parsec.Prim;
+using System.Linq;
+using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
+using static TinyLang.Compiler.Core.Parsing.Parsers.WhileParsers;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
@@ -14,7 +18,7 @@ namespace TinyLang.Compiler.Core.Parsing
     {
         public Parser<Expr> Tokenize(IExpressionParserBuilder<Expr> expressionParserBuilder)
         {
-            return expressionParserBuilder
+            var exprParser = expressionParserBuilder
                 .WithBinaryOperation("*", Assoc.Left, Expr.Mul, 4)
                 .WithBinaryOperation("+", Assoc.Left, Expr.Add, 3)
                 .WithBinaryOperation("-", Assoc.Left, Expr.Subtr, 3)
@@ -32,6 +36,16 @@ namespace TinyLang.Compiler.Core.Parsing
                 .WithUnaryOperation("!", UnaryOperationType.Prefix, Expr.Not, 2)
                 .WithBinaryOperation("||", Assoc.Left, Expr.Or, 3)
                 .Build();
+
+            return Either(exprParser, IfElse, While, DoWhile);
+        }
+
+        private Parser<Expr> Either(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
+        {
+            var parsers = funcs.Select(f => f(attempt(lazyp(() => parser)))).ToArray();
+            parser = either(attempt(parser), choice(parsers));
+
+            return parser;
         }
     }
 }

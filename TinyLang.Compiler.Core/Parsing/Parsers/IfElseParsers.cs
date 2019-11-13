@@ -24,26 +24,23 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
         }
         public static Parser<Expr> ElseParser(Parser<Expr> parser)
         {
-            var elseStrParser = from str in asString(many1(letter)) where str == ReservedNames.Else select str;
-            return from s in elseStrParser
-                from scope in Scope(parser)
+            return from s in StrValue(ReservedNames.Else)
+                   from scope in Scope(parser)
                    select new Else { Scope = scope as Scope } as Expr;
         }
 
         public static Parser<Expr> ElifParser(Parser<Expr> parser)
         {
-            var elifStrParser = from str in asString(many1(letter)) where str == ReservedNames.Elif select str;
-            return from s in elifStrParser
-                from expr in TokenParser.Parens(parser)
+            return from s in StrValue(ReservedNames.Elif)
+                   from expr in TokenParser.Parens(parser)
                 from scope in Scope(parser)
                    select new Elif(expr) { Scope = scope as Scope } as Expr;
         }
 
         public static Parser<Expr> IfParser(Parser<Expr> parser)
         {
-            var ifStrParser = from str in asString(many1(letter)) where str == ReservedNames.If select str;
-            return from s in ifStrParser
-                from expr in TokenParser.Parens(parser)
+            return from s in StrValue(ReservedNames.If)
+                   from expr in TokenParser.Parens(parser)
                 from scope in Scope(parser)
                    select new If(expr) { Scope = scope as Scope } as Expr;
 

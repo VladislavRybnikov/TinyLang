@@ -16,7 +16,6 @@ namespace TinyLang.Compiler.Core.Parsing
         public ExprParser(IExpressionParserBuilder<Expr> exprParserBuilder, ITokenizer<Expr> exprTokenizer)
         {
             _parser = exprTokenizer.Tokenize(exprParserBuilder);
-            _parser = either(attempt(_parser), IfElse(lazyp(() => _parser)));
         }
 
         public IEnumerable<Expr> Parse(string str)

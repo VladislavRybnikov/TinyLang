@@ -13,6 +13,7 @@ namespace TinyLang.Compiler.Core
 {
     public static class TinyLanguage
     {
+
         public static GenLanguageDef LanguageDef { get; }
 
         public static GenTokenParser TokenParser { get; }
@@ -26,6 +27,7 @@ namespace TinyLang.Compiler.Core
         public static Parser<Expr> VarParser { get; }
 
         public static Parser<Expr> ExprValueParser { get; }
+        public static Parser<string> StrValue(string value) => from str in asString(many1(letter)) where str == value select str;
 
         public static Parser<Expr> Scope(Parser<Expr> parser) =>
             from exprSet in TokenParser.Braces(many(parser))
@@ -34,7 +36,7 @@ namespace TinyLang.Compiler.Core
         static TinyLanguage()
         {
             LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(new[] 
-                { ReservedNames.If, ReservedNames.Elif, ReservedNames.Else })); 
+                { ReservedNames.If, ReservedNames.Elif, ReservedNames.Else, ReservedNames.While, ReservedNames.Do })); 
 
             TokenParser = makeTokenParser(LanguageDef);
             IntParser = from n in TokenParser.Natural
