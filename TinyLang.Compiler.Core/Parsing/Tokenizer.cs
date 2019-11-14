@@ -31,8 +31,8 @@ namespace TinyLang.Compiler.Core.Parsing
                 .WithBinaryOperation("<=", Assoc.Left, Expr.LessOrEq, 3)
                 .WithBinaryOperation(">", Assoc.Left, Expr.More, 3)
                 .WithBinaryOperation(">=", Assoc.Left, Expr.MoreOrEq, 3)
-                .WithBinaryOperation("?", Assoc.Left, Expr.If, 1)
-                .WithBinaryOperation(":", Assoc.Left, Expr.Choose, 2)
+                //.WithBinaryOperation("?", Assoc.Left, Expr.If, 1)
+                //.WithBinaryOperation(":", Assoc.Left, Expr.Choose, 2)
                 .WithUnaryOperation("!", UnaryOperationType.Prefix, Expr.Not, 2)
                 .WithBinaryOperation("||", Assoc.Left, Expr.Or, 3)
                 .Build();

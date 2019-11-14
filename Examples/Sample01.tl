@@ -1,7 +1,7 @@
 a = "Hello World";
 print(a);
 
-record User(name: string, age: int); // class with all fields equality. Have state but not behavoiur
+record User(name: str, age: int); // class with all fields equality. Have state but not behavoiur
 
 data record UserDto(name: string, age: int); // readonly struct
 
