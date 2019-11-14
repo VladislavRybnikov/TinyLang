@@ -11,5 +11,6 @@ namespace TinyLang.Compiler.Core.Parsing
         public const string Elif = "elif";
         public const string While = "while";
         public const string Do = "do";
+        public const string Record = "record";
     }
 }

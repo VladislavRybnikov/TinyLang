@@ -13,7 +13,7 @@ namespace TinyLang.CLI
         {
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
-                @"x: str = ""hello""");
+                @"record User(name: str, age: int)");
             parsed.ToList().ForEach(Console.WriteLine);
         }
 

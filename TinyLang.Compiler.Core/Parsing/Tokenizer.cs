@@ -6,6 +6,7 @@ using static LanguageExt.Parsec.Prim;
 using System.Linq;
 using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.WhileParsers;
+using static TinyLang.Compiler.Core.Parsing.Parsers.RecordParsers;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
@@ -37,15 +38,20 @@ namespace TinyLang.Compiler.Core.Parsing
                 .WithBinaryOperation("||", Assoc.Left, Expr.Or, 3)
                 .Build();
 
-            return Either(exprParser, IfElse, While, DoWhile);
+            return AddRecords(Compose(exprParser, IfElse, While, DoWhile));
         }
 
-        private Parser<Expr> Either(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
+        private Parser<Expr> Compose(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
         {
             var parsers = funcs.Select(f => f(attempt(lazyp(() => parser)))).ToArray();
             parser = either(attempt(parser), choice(parsers));
 
             return parser;
+        }
+
+        private Parser<Expr> AddRecords(Parser<Expr> parser)
+        {
+            return either(attempt(parser), Records());
         }
     }
 }

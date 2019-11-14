@@ -27,6 +27,7 @@ namespace TinyLang.Compiler.Core
         public static Parser<Expr> StrParser { get; }
 
         public static Parser<Expr> VarParser { get; }
+        public static Parser<Expr> TypedVarParser { get; }
 
         public static Parser<Expr> ExprValueParser { get; }
 
@@ -41,7 +42,7 @@ namespace TinyLang.Compiler.Core
         static TinyLanguage()
         {
             LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(new[]
-                { ReservedNames.If, ReservedNames.Elif, ReservedNames.Else, ReservedNames.While, ReservedNames.Do }));
+                { ReservedNames.If, ReservedNames.Elif, ReservedNames.Else, ReservedNames.While, ReservedNames.Do, ReservedNames.Record }));
 
             TokenParser = makeTokenParser(LanguageDef);
 
@@ -71,6 +72,10 @@ namespace TinyLang.Compiler.Core
             VarParser = from v in varParser
                         from t in optional(typeAssignParser)
                         select defineVar(v, t);
+
+            TypedVarParser = from v in varParser
+                             from t in typeAssignParser
+                             select defineVar(v, t);
 
             ExprValueParser = choice(attempt(BoolParser),
                 attempt(IntParser), attempt(StrParser), VarParser);
