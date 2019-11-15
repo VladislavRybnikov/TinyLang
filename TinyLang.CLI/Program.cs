@@ -13,7 +13,19 @@ namespace TinyLang.CLI
         {
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
-                @"record User(name: str, age: int)");
+                @"record User(name: str)
+
+                    func GetUserByName(name: str): User
+                    {
+                       x = new User(""Vlad"")
+                    }
+
+                    if(true)
+                    {   
+                        user = GetUserByName(x > 2 ? ""Vlad"" : ""Test"")
+                    }
+        
+                    ");
             parsed.ToList().ForEach(Console.WriteLine);
         }
 

@@ -27,7 +27,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
     public class ExpressionParserBuilder<T> : IExpressionParserBuilder<T>
     {
-        private readonly Parser<T> _baseParser;
+        private readonly Func<Parser<T>, Parser<T>> _baseParserF;
 
         private readonly Dictionary<int, List<Operator<T>>> _operators =
             new Dictionary<int, List<Operator<T>>>();
@@ -47,9 +47,9 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             Operator.Postfix(from x in _reservedOp(name)
                 select f);
 
-        public ExpressionParserBuilder(Parser<T> baseParser, Func<string, Parser<Unit>> reservedOp)
+        public ExpressionParserBuilder(Func<Parser<T>, Parser<T>> baseParserFactory, Func<string, Parser<Unit>> reservedOp)
         {
-            _baseParser = baseParser;
+            _baseParserF = baseParserFactory;
             _reservedOp = reservedOp;
         }
 
@@ -85,7 +85,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
             // Build up the expression term
             var term = either(
-                attempt(_baseParser),
+                attempt(_baseParserF(lazyp(() => expr))),
                 TinyLanguage.TokenParser.Parens(lazyp(() => expr)));
 
             // Build the expression parser

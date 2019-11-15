@@ -16,7 +16,7 @@ namespace TinyLang.Compiler.Core
 
         public static Expr Parse(string line)
         {
-            var exprParserBuilder = new ExpressionParserBuilder<Expr>(ExprValueParser, TokenParser.ReservedOp);
+            var exprParserBuilder = new ExpressionParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp);
             var tokenizer = new ExprTokenizer();
 
             var parser = new ExprParser(exprParserBuilder, tokenizer);
@@ -27,7 +27,7 @@ namespace TinyLang.Compiler.Core
         {
             get
             {
-                var exprParserBuilder = new ExpressionParserBuilder<Expr>(ExprValueParser, TokenParser.ReservedOp);
+                var exprParserBuilder = new ExpressionParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp);
                 var tokenizer = new ExprTokenizer();
 
                 var parser = new ExprParser(exprParserBuilder, tokenizer);

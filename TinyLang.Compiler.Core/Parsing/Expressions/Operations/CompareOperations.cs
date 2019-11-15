@@ -82,7 +82,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 
             public override string ToString()
             {
-                return $"MoreOrEq({Left}, {Right})";
+                return $"More({Left}, {Right})";
             }
 
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
@@ -27,6 +28,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             public Expr Value { get; }
             public AssignExpr(Expr assigment, Expr value)
             {
+                if (assigment is RecordCreation || assigment is FuncInvocation)
+                {
+                    throw new Exception("Assignment is not allowed");
+                }
+
                 Assigment = assigment;
                 Value = value;
             }

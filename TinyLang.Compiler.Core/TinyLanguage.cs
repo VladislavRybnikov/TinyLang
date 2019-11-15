@@ -9,6 +9,7 @@ using TinyLang.Compiler.Core.Parsing;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
+using TinyLang.Compiler.Core.Parsing.Parsers;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 
 namespace TinyLang.Compiler.Core
@@ -27,13 +28,27 @@ namespace TinyLang.Compiler.Core
         public static Parser<Expr> StrParser { get; }
 
         public static Parser<Expr> VarParser { get; }
+
+        public static Parser<Expr> UntypedVarParser { get; set; }
+
+        public static Parser<TypeExpr> TypeAssignParser { get; }
+
         public static Parser<Expr> TypedVarParser { get; }
 
         public static Parser<Expr> ExprValueParser { get; }
 
         public static Parser<string> StrValue(string value) => from str in asString(many1(letter)) where str == value select str;
 
-
+        public static Parser<Expr> GetExprValueParser(Parser<Expr> exprParser)
+        {
+            return choice(
+                attempt(FuncParsers.FuncInvocation(exprParser)), 
+                attempt(RecordParsers.RecordCreation(exprParser)), 
+                attempt(BoolParser),
+                attempt(IntParser), 
+                attempt(StrParser), 
+                VarParser);
+        }
 
         public static Parser<Expr> Scope(Parser<Expr> parser) =>
             from exprSet in TokenParser.Braces(many(parser))
@@ -41,8 +56,7 @@ namespace TinyLang.Compiler.Core
 
         static TinyLanguage()
         {
-            LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(new[]
-                { ReservedNames.If, ReservedNames.Elif, ReservedNames.Else, ReservedNames.While, ReservedNames.Do, ReservedNames.Record }));
+            LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(ReservedNames.All));
 
             TokenParser = makeTokenParser(LanguageDef);
 
@@ -56,26 +70,26 @@ namespace TinyLang.Compiler.Core
 
             StrParser = from str in TokenParser.StringLiteral select Str(str);
 
-            var varParser = from w in asString(from word in many1(letter)
+            UntypedVarParser = from w in asString(from word in many1(letter)
                                                from sp in spaces
                                                select word)
                             where !LanguageDef.ReservedOpNames.Contains(w)
-                            select new GeneralOperations.VarExpr(w);
+                            select new GeneralOperations.VarExpr(w) as Expr;
 
-            var typeAssignParser = from c in TokenParser.Colon
+            TypeAssignParser = from c in TokenParser.Colon
                                    from s in TokenParser.Identifier
                                    select new TypeExpr(s);
 
             Func<GeneralOperations.VarExpr, Option<TypeExpr>, Expr> defineVar = (v, t) =>
                 t.Match<Expr>(some => new TypedVar(v, some), () => v);
 
-            VarParser = from v in varParser
-                        from t in optional(typeAssignParser)
-                        select defineVar(v, t);
+            VarParser = from v in UntypedVarParser
+                        from t in optional(TypeAssignParser)
+                        select defineVar(v as GeneralOperations.VarExpr, t);
 
-            TypedVarParser = from v in varParser
-                             from t in typeAssignParser
-                             select defineVar(v, t);
+            TypedVarParser = from v in UntypedVarParser
+                             from t in TypeAssignParser
+                             select defineVar(v as GeneralOperations.VarExpr, t);
 
             ExprValueParser = choice(attempt(BoolParser),
                 attempt(IntParser), attempt(StrParser), VarParser);

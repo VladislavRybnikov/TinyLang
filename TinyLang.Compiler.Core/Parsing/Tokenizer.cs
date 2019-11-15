@@ -7,6 +7,7 @@ using System.Linq;
 using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.WhileParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.RecordParsers;
+using static TinyLang.Compiler.Core.Parsing.Parsers.FuncParsers;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
@@ -32,13 +33,19 @@ namespace TinyLang.Compiler.Core.Parsing
                 .WithBinaryOperation("<=", Assoc.Left, Expr.LessOrEq, 3)
                 .WithBinaryOperation(">", Assoc.Left, Expr.More, 3)
                 .WithBinaryOperation(">=", Assoc.Left, Expr.MoreOrEq, 3)
-                //.WithBinaryOperation("?", Assoc.Left, Expr.If, 1)
-                //.WithBinaryOperation(":", Assoc.Left, Expr.Choose, 2)
+                .WithBinaryOperation("?", Assoc.Left, Expr.If, 1)
+                .WithBinaryOperation(":", Assoc.Left, Expr.Choose, 2)
                 .WithUnaryOperation("!", UnaryOperationType.Prefix, Expr.Not, 2)
                 .WithBinaryOperation("||", Assoc.Left, Expr.Or, 3)
                 .Build();
 
-            return AddRecords(Compose(exprParser, IfElse, While, DoWhile));
+            exprParser = either(attempt(FuncInvocation(lazyp(() => exprParser))), exprParser);
+
+            var parser = Compose(exprParser, IfElse, While, DoWhile, FuncDefinition);
+
+            parser = Add(parser, Records);
+
+            return parser;
         }
 
         private Parser<Expr> Compose(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
@@ -49,9 +56,9 @@ namespace TinyLang.Compiler.Core.Parsing
             return parser;
         }
 
-        private Parser<Expr> AddRecords(Parser<Expr> parser)
+        private Parser<Expr> Add(Parser<Expr> parser, Func<Parser<Expr>> f)
         {
-            return either(attempt(parser), Records());
+            return either(attempt(parser), f());
         }
     }
 }
