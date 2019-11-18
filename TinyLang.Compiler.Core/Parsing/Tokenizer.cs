@@ -13,12 +13,12 @@ namespace TinyLang.Compiler.Core.Parsing
 {
     public interface ITokenizer<T>
     {
-        Parser<T> Tokenize(IExpressionParserBuilder<T> expressionParserBuilder);
+        Parser<T> Tokenize(IParserBuilder<T> expressionParserBuilder);
     }
 
     public class ExprTokenizer : ITokenizer<Expr>
     {
-        public Parser<Expr> Tokenize(IExpressionParserBuilder<Expr> expressionParserBuilder)
+        public Parser<Expr> Tokenize(IParserBuilder<Expr> expressionParserBuilder)
         {
             var exprParser = expressionParserBuilder
                 .WithBinaryOperation("*", Assoc.Left, Expr.Mul, 4)
@@ -39,7 +39,7 @@ namespace TinyLang.Compiler.Core.Parsing
                 .WithBinaryOperation("||", Assoc.Left, Expr.Or, 3)
                 .Build();
 
-            exprParser = either(attempt(FuncInvocation(lazyp(() => exprParser))), exprParser);
+            //exprParser = either(attempt(FuncInvocation(lazyp(() => exprParser))), exprParser);
 
             var parser = Compose(exprParser, IfElse, While, DoWhile, FuncDefinition);
 

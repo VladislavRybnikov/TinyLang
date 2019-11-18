@@ -14,18 +14,18 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
     public delegate Operator<T> Unary<T>(string name, Func<T, T> f);
 
-    public interface IExpressionParserBuilder<T>
+    public interface IParserBuilder<T>
     {
-        IExpressionParserBuilder<T> WithBinaryOperation
+        IParserBuilder<T> WithBinaryOperation
             (string name, Assoc assoc, Func<T, T, T> operation, int priority);
 
-        IExpressionParserBuilder<T> WithUnaryOperation
+        IParserBuilder<T> WithUnaryOperation
             (string name, UnaryOperationType type, Func<T, T> operation, int priority);
 
         Parser<T> Build();
     }
 
-    public class ExpressionParserBuilder<T> : IExpressionParserBuilder<T>
+    public class ParserBuilder<T> : IParserBuilder<T>
     {
         private readonly Func<Parser<T>, Parser<T>> _baseParserF;
 
@@ -47,13 +47,13 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             Operator.Postfix(from x in _reservedOp(name)
                 select f);
 
-        public ExpressionParserBuilder(Func<Parser<T>, Parser<T>> baseParserFactory, Func<string, Parser<Unit>> reservedOp)
+        public ParserBuilder(Func<Parser<T>, Parser<T>> baseParserFactory, Func<string, Parser<Unit>> reservedOp)
         {
             _baseParserF = baseParserFactory;
             _reservedOp = reservedOp;
         }
 
-        public IExpressionParserBuilder<T> WithBinaryOperation(string name, Assoc assoc, Func<T, T, T> operation, int priority)
+        public IParserBuilder<T> WithBinaryOperation(string name, Assoc assoc, Func<T, T, T> operation, int priority)
         {
             if (_operators.TryGetValue(priority, out var list))
                 list.Add(binary(name, operation, assoc));
@@ -63,7 +63,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             return this;
         }
 
-        public IExpressionParserBuilder<T> WithUnaryOperation(string name, UnaryOperationType type, Func<T, T> operation, int priority)
+        public IParserBuilder<T> WithUnaryOperation(string name, UnaryOperationType type, Func<T, T> operation, int priority)
         {
             var @operator =
                 (type switch { UnaryOperationType.Prefix => prefix, _ => postfix })(name,

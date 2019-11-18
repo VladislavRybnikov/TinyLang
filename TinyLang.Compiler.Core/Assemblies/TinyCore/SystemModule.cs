@@ -21,7 +21,7 @@ namespace TinyLang.Compiler.Core.Assemblies.TinyCore
 
         private void AddPrintMethod()
         {
-            MethodBuilder print = ModuleBuilder.DefineGlobalMethod("Print", MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, typeof(void), new []{typeof(string)});
+            MethodBuilder print = ModuleBuilder.DefineGlobalMethod("print", MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, typeof(void), new []{typeof(string)});
 
             ILGenerator il = print.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);

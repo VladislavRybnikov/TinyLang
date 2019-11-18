@@ -13,7 +13,8 @@ namespace TinyLang.CLI
         {
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
-                @"record User(name: str)
+                @"
+                    record User(name: str)
 
                     func GetUserByName(name: str): User
                     {
@@ -23,6 +24,7 @@ namespace TinyLang.CLI
                     if(true)
                     {   
                         user = GetUserByName(x > 2 ? ""Vlad"" : ""Test"")
+                        print(user)
                     }
         
                     ");

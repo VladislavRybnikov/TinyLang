@@ -20,7 +20,7 @@ namespace TinyLang.Compiler.Core.Base
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName
             {
                 Name = Name
-            }, AssemblyBuilderAccess.Run);
+            }, AssemblyBuilderAccess.RunAndCollect);
         }
 
         public TinyAssembly With<TModule>() where TModule : TinyModule

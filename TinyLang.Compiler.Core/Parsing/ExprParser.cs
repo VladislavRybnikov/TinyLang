@@ -4,23 +4,28 @@ using System.Collections.Generic;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
+using static LanguageExt.Parsec.Char;
 using System.Linq;
-using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
-    public class ExprParser
+    public interface IExprParser
+    {
+        IEnumerable<Expr> Parse(string str);
+    }
+
+    public class ExprParser : IExprParser
     {
         private Parser<Expr> _parser;
 
-        public ExprParser(IExpressionParserBuilder<Expr> exprParserBuilder, ITokenizer<Expr> exprTokenizer)
+        public ExprParser(IParserBuilder<Expr> exprParserBuilder, ITokenizer<Expr> exprTokenizer)
         {
             _parser = exprTokenizer.Tokenize(exprParserBuilder);
         }
 
         public IEnumerable<Expr> Parse(string str)
         {
-            var parser = from x in many1(_parser) select x.AsEnumerable();
+            var parser = from s in spaces from x in many1(_parser) select x.AsEnumerable();
 
             return ParseWithExceptionThrow(parser, str);
         }
