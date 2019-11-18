@@ -38,30 +38,4 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         public Scope Scope { get; set; }
     }
 
-    public class FuncDeclaration : ScopedExpr
-    {
-        public IEnumerable<VarExpr> Args { get; }
-
-        public FuncDeclaration(IEnumerable<VarExpr> args) 
-        {
-            Args = args;
-        }
-
-
-        public override string ToString()
-        {
-            return $"Func(Args({string.Join(", ", Args)}), {Scope})";
-        }
-    }
-
-    public class FuncInvocation : Expr
-    {
-        public IEnumerable<Expr> Parameters { get; }
-
-        public FuncInvocation(IEnumerable<Expr> parameters) 
-        {
-            Parameters = parameters;
-        }
-    }
-
 }

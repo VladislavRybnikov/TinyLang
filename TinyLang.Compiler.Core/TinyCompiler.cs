@@ -16,13 +16,12 @@ namespace TinyLang.Compiler.Core
 
     public class TinyCompiler : ICompiler
     {
-        private TinyCompiler(IExprParser parser, ICodeGenerator generator) { }
+        private TinyCompiler(IExprParser parser) { }
 
         public static ICompiler Create
         (
             Func<Parser<Expr>> singleValueParserFactory,
-            ITokenizer<Expr> tokenizer,
-            ICodeGenerator codeGenerator
+            ITokenizer<Expr> tokenizer
         )
         {
             return null;

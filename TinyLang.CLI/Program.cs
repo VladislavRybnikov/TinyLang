@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using TinyLang.CLI.Types;
 using TinyLang.Compiler.Core;
+using TinyLang.Compiler.Core.CodeGeneration;
 using TinyLang.Compiler.Core.Parsing;
 
 namespace TinyLang.CLI
@@ -15,20 +17,25 @@ namespace TinyLang.CLI
             var parsed = TinyInteractive.Parser.Parse(
                 @"
                     record User(name: str)
+                    
+                    u = new User(""Vlad"")
 
-                    func GetUserByName(name: str): User
-                    {
-                       x = new User(""Vlad"")
-                    }
-
-                    if(true)
-                    {   
-                        user = GetUserByName(x > 2 ? ""Vlad"" : ""Test"")
-                        print(user)
-                    }
-        
+                    print(u)
                     ");
-            parsed.ToList().ForEach(Console.WriteLine);
+
+            var state = CodeGenerationState.BeginCodeGeneration("test", "testM");
+
+            foreach (var expr in parsed) 
+            {
+                CodeGeneratorFactory.For(expr.GetType()).Generate(expr, state);
+            }
+            state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
+            
+            state.ModuleBuilder.CreateGlobalFunctions();
+
+            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
+
+            // parsed.ToList().ForEach(Console.WriteLine);
         }
 
     }
