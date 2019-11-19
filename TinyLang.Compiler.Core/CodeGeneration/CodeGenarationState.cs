@@ -80,7 +80,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName
             {
-                Name = name
+                Name = name,
             }, AssemblyBuilderAccess.RunAndCollect);
             State = CodeGenerationStates.Assembly;
 
@@ -117,7 +117,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             MethodBuilder = ModuleBuilder.DefineGlobalMethod(name, MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, returnType, parameterTypes);
             State = CodeGenerationStates.Method;
-
+            DefinedMethods.Add(name, MethodBuilder);
             MethodArgs = new Dictionary<string, TypedArg>();
             MethodVariables = new Dictionary<string, LocalBuilder>();
 

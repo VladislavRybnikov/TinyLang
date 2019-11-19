@@ -43,58 +43,5 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             return lb;
         }
-
-        private (Type type, Action emitLoad) LoadVar(Expr expr, ILGenerator ilGenerator, CodeGenerationState state) => expr switch
-        {
-            VarExpr v => LoadFromMethodScope(v, ilGenerator, state),
-            StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
-            IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
-            BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
-            RecordCreationExpr record => CreateRecord(record, ilGenerator, state),
-            _ => throw new Exception("Unsupported variable type")
-        };
-
-        private (Type type, Action emitLoad) LoadFromMethodScope(VarExpr expr, ILGenerator ilGenerator,
-            CodeGenerationState state)
-        {
-            if (state.State != CodeGenerationStates.Method) 
-                throw new Exception("Can not resolve variable");
-            
-            if (state.MethodArgs.TryGetValue(expr.Name, out var arg))
-            {
-                return (arg.Type, () => arg.EmitLoad(ilGenerator));
-            }
-
-            if (state.MethodVariables.TryGetValue(expr.Name, out var v))
-            {
-                return (v.LocalType, () => ilGenerator.Emit(OpCodes.Ldloc, v));
-            }
-
-            throw new Exception("Can not resolve variable");
-        }
-
-        private (Type type, Action emitLoad) CreateRecord
-            (RecordCreationExpr expr, ILGenerator ilGenerator, CodeGenerationState state)
-        {
-            var type = state.ModuleBuilder.GetType(expr.Name);
-            var ctor = type.GetConstructors()[0];
-            var ctorParams = ctor.GetParameters();
-
-            var providedParams = expr.Props.ToArray();
-
-            if (ctorParams.Length != providedParams.Length)
-                throw new IndexOutOfRangeException("Wrong args");
-
-            for (int i = 0; i < ctorParams.Length; i++)
-            {
-                //ilGenerator.Emit(OpCodes.Stloc_0);
-                //ilGenerator.Emit(OpCodes.Ldarg_0);
-                LoadVar(providedParams[i], ilGenerator, state).emitLoad();
-            }
-
-            //ilGenerator.Emit(OpCodes.Newobj, ctor);
-
-            return (type, () => ilGenerator.Emit(OpCodes.Newobj, ctor));
-        }
     }
 }

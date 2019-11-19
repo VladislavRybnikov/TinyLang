@@ -18,7 +18,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         };
 
         public static Type Resolve(string name, ModuleBuilder module)
-            => _types.TryGetValue(name, out var val) ? val : module.GetType("name");
+            => _types.TryGetValue(name, out var val) ? val : module.GetType(name);
 
         public static Type ResolveFromExpr(Expr expr, ModuleBuilder module) =>
             expr switch

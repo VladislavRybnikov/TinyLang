@@ -21,18 +21,19 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             var retType = TypesResolver.ResolveFromExpr(retExpr, state.ModuleBuilder);
 
             var args = expression.Args.Select((x, i) => TypedArg.FromVar(x, state).WithEmitLoad(il => il.Emit(OpCodes.Ldarg_S, (sbyte)i))).ToList();
-
-            args.ForEach(x => state.MethodArgs.Add(x.Name, x));
-
             var argsTypes = args.Select(a => a.Type).ToArray();
 
             state.WithGlobalMethod(expression.Name, retType, argsTypes);
+
+            args.ForEach(x => state.MethodArgs.Add(x.Name, x));
 
             foreach (var s in expression.Body.Statements)
             {
                 Factory.GeneratorFor(s.GetType()).Generate(s, state);
             }
 
+            var il = state.MethodBuilder.GetILGenerator();
+            il.Emit(OpCodes.Ret);
 
             return state.EndGeneration();
         }

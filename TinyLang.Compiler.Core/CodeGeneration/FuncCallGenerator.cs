@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
@@ -17,23 +18,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             var il = state.MainMethodBuilder.GetILGenerator();
 
-            var argsTypes = new List<Type>();
-
-            for (int i = 0; i < args.Length; i++)
+            var argsTypes = args.Select(a =>
             {
-                switch (args[i]) 
-                {
-                    case VarExpr v: 
-                        {
-                            var lb = state.MainVariables[v.Name];
-                            il.Emit(OpCodes.Ldloc, lb);
-
-                            argsTypes.Add(lb.LocalType);
-
-                            break;
-                        }
-                }
-            }
+                var (type, emitLoad) = LoadVar(a, il, state);
+                emitLoad();
+                return type;
+            }).ToList();
 
             il.EmitCall(OpCodes.Call, method, argsTypes.ToArray());
 

@@ -25,15 +25,16 @@ namespace TinyLang.CLI
                     print(u)
                     ";
 
-            //TinyCLI.Run();
-            var parsed = TinyInteractive.Parser.Parse(
-                @"
+            var typeExample = @"
                     record User(name: str, type: str)
                    
                     u = new User(""Vlad"", ""admin"")
 
                     print(u)
-                    ");
+                    ";
+
+            //TinyCLI.Run();
+            var parsed = TinyInteractive.Parser.Parse(funcExample);
 
             var state = CodeGenerationState.BeginCodeGeneration("test", "testM");
 

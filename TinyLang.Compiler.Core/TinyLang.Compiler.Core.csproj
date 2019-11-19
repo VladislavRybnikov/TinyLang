@@ -11,4 +11,8 @@
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CodeGeneration\Loaders\" />
+  </ItemGroup>
+
 </Project>
