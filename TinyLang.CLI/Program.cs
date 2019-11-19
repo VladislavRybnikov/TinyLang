@@ -6,6 +6,9 @@ using TinyLang.CLI.Types;
 using TinyLang.Compiler.Core;
 using TinyLang.Compiler.Core.CodeGeneration;
 using TinyLang.Compiler.Core.Parsing;
+using TinyLang.Compiler.Core.Parsing.Expressions;
+using static TinyLang.Compiler.Core.ExpressionEvaluator;
+using static TinyLang.Compiler.Core.TinyLanguage;
 
 namespace TinyLang.CLI
 {
@@ -34,21 +37,14 @@ namespace TinyLang.CLI
                     ";
 
             //TinyCLI.Run();
-            var parsed = TinyInteractive.Parser.Parse(funcExample);
+            TinyCompiler.Create(
+                new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
+                new ExprTokenizer(),
+                CodeGeneratorsFactory.Instance)
+                .WithAssemblyName("test")
+                .WithCodeSource(funcExample, SourceType.String)
+                .Run();
 
-            var state = CodeGenerationState.BeginCodeGeneration("test", "testM");
-
-            foreach (var expr in parsed) 
-            {
-                CodeGeneratorsFactory.Instance.GeneratorFor(expr.GetType()).Generate(expr, state);
-            }
-            state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
-            
-            state.ModuleBuilder.CreateGlobalFunctions();
-
-            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
-
-            // parsed.ToList().ForEach(Console.WriteLine);
         }
 
     }

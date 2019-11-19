@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Text;
 using LanguageExt.Parsec;
 using TinyLang.Compiler.Core.CodeGeneration;
@@ -9,22 +10,68 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 
 namespace TinyLang.Compiler.Core
 {
+    public enum SourceType 
+    {
+        String, File
+    }
+
     public interface ICompiler
     {
+        ICompiler WithCodeSource(string source, SourceType sourceType);
+        ICompiler WithAssemblyName(string name);
 
+        void Run();
     }
 
     public class TinyCompiler : ICompiler
     {
-        private TinyCompiler(IExprParser parser) { }
+        private readonly IExprParser _parser;
+        private readonly ICodeGeneratorsFactory _codeGeneratorsFactory;
+
+        private string assemblyName, source;
+
+        private SourceType sourceType;
+
+        private TinyCompiler(IExprParser parser, ICodeGeneratorsFactory codeGeneratorsFactory) {
+            _parser = parser;
+            _codeGeneratorsFactory = codeGeneratorsFactory;
+        }
 
         public static ICompiler Create
         (
-            Func<Parser<Expr>> singleValueParserFactory,
-            ITokenizer<Expr> tokenizer
+            IParserBuilder<Expr> parserBuilder,
+            ITokenizer<Expr> tokenizer,
+            ICodeGeneratorsFactory codeGeneratorsFactory
         )
         {
-            return null;
+            return new TinyCompiler(new ExprParser(parserBuilder, tokenizer), codeGeneratorsFactory);
+        }
+
+        public void Run()
+        {
+            var parsed = sourceType == SourceType.String ? TinyInteractive.Parser.Parse(source) : null;
+
+            var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
+            foreach (var expr in parsed)
+            {
+                CodeGeneratorsFactory.Instance.GeneratorFor(expr.GetType()).Generate(expr, state);
+            }
+            state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
+            state.ModuleBuilder.CreateGlobalFunctions();
+
+            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
+        }
+
+        public ICompiler WithAssemblyName(string name)
+        {
+            assemblyName = name;
+            return this;
+        }
+
+        public ICompiler WithCodeSource(string source, SourceType sourceType)
+        {
+            this.source = source;
+            return this;
         }
     }
 }
