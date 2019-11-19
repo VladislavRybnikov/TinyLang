@@ -13,12 +13,24 @@ namespace TinyLang.CLI
     {
         static void Main(string[] args)
         {
+            var funcExample = @"
+                    record User(name: str, type: str)
+                    func createAdmin(name: str)
+                    {
+                        return new User(name, ""admin"")
+                    }
+                    
+                    u = createAdmin(""Vlad"")
+
+                    print(u)
+                    ";
+
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
                 @"
-                    record User(name: str, age: int)
-                    
-                    u = new User(""Vlad"", 20)
+                    record User(name: str, type: str)
+                   
+                    u = new User(""Vlad"", ""admin"")
 
                     print(u)
                     ");

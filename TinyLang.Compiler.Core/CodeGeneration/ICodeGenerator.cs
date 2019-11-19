@@ -16,6 +16,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
     public interface ICodeGeneratorsFactory
     {
         ICodeGenerator GeneratorFor(Type type);
+        ICodeGenerator GeneratorFor<T>() where T : Expr;
     }
 
     public class CodeGeneratorsFactory : ICodeGeneratorsFactory
@@ -27,6 +28,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         private CodeGeneratorsFactory() { }
 
         public ICodeGenerator GeneratorFor(Type type) => _genartors[type];
+        public ICodeGenerator GeneratorFor<T>() where T : Expr => _genartors[typeof(T)];
 
         public static ICodeGeneratorsFactory Instance
         {

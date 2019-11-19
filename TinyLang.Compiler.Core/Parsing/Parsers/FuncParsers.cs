@@ -22,9 +22,9 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from name in TokenParser.Identifier
                 from args in argsParser
                 from type in optional(TypeAssignParser)
-                from body in Scope(parser)
+                from body in FuncScope(parser)
                 where !LanguageDef.ReservedOpNames.Contains(name)
-                select FuncExpr.Define(name, type, args, body as Scope);
+                select FuncExpr.Define(name, type, args, body);
         }
 
         public static Parser<Expr> FuncInvocation(Parser<Expr> parser)
@@ -33,6 +33,20 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from args in TokenParser.ParensCommaSep(parser)
                 where !LanguageDef.ReservedOpNames.Contains(name)
                 select FuncExpr.Invoke(name, args);
+        }
+
+        private static Parser<Scope> FuncScope(Parser<Expr> parser)
+        {
+            var ret = from _ in StrValue(ReservedNames.Return)
+                from s in spaces
+                from expr in parser
+                select FuncExpr.Return(expr);
+
+            var statements = from e in many(parser)
+                             from r in optional(ret)
+                             select e.Append(r.AsEnumerable());
+
+            return from exprSet in TokenParser.Braces(statements) select new Scope(exprSet.ToList());
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using TinyLang.Compiler.Core.CodeGeneration.Types;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
@@ -17,6 +18,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration
     public class CodeGenerationState
     {
         public Dictionary<string, LocalBuilder> MainVariables { get; } = new Dictionary<string, LocalBuilder>();
+
+        public Dictionary<string, LocalBuilder> MethodVariables { get; private set; }
+
+        public Dictionary<string, TypedArg> MethodArgs { get; private set; }
 
         public Dictionary<string, MethodBuilder> DefinedMethods { get; } = new Dictionary<string, MethodBuilder>();
 
@@ -60,6 +65,15 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             return state;
         }
 
+        public CodeGenerationState EndGeneration()
+        {
+            State = CodeGenerationStates.Module;
+            MethodVariables = null;
+            MethodArgs = null;
+
+            return this;
+        }
+
         public CodeGenerationState WithAssembly(string name)
         {
             MethodBuilder = null; TypeBuilder = null; ModuleBuilder = null;
@@ -75,7 +89,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         public CodeGenerationState WithModule(string name)
         {
-            if (AssemblyBuilder == null) throw new InvalidCodegenerationStateException();
+            if (AssemblyBuilder == null) throw new InvalidCodeGenerationStateException();
 
             MethodBuilder = null; TypeBuilder = null;
             ModuleBuilder = AssemblyBuilder.GetDynamicModule(name) ?? AssemblyBuilder.DefineDynamicModule(name);
@@ -86,7 +100,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         public CodeGenerationState WithType(string name)
         {
-            if (ModuleBuilder == null) throw new InvalidCodegenerationStateException();
+            if (ModuleBuilder == null) throw new InvalidCodeGenerationStateException();
 
             TypeBuilder = ModuleBuilder.DefineType(name, TypeAttributes.Public |
                 TypeAttributes.AutoClass |
@@ -99,14 +113,32 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         public CodeGenerationState WithGlobalMethod(string name, Type returnType, Type[] parameterTypes)
         {
-            if (ModuleBuilder == null) throw new InvalidCodegenerationStateException();
+            if (ModuleBuilder == null) throw new InvalidCodeGenerationStateException();
 
             MethodBuilder = ModuleBuilder.DefineGlobalMethod(name, MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, returnType, parameterTypes);
+            State = CodeGenerationStates.Method;
+
+            MethodArgs = new Dictionary<string, TypedArg>();
+            MethodVariables = new Dictionary<string, LocalBuilder>();
+
+            return this;
+        }
+
+        public CodeGenerationState AddVariable(string name, LocalBuilder lb)
+        {
+            if (State == CodeGenerationStates.Method)
+            {
+                MethodVariables.Add(name, lb);
+            }
+            else
+            {
+                MainVariables.Add(name, lb);
+            }
 
             return this;
         }
     }
 
-    public class InvalidCodegenerationStateException : Exception { }
+    public class InvalidCodeGenerationStateException : Exception { }
 
 }

@@ -22,8 +22,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             DefineCtor(props, tb);
             OverrideToStr(props, tb, expression.Name);
             state.TypeBuilder.CreateType();
-            state.State = CodeGenerationStates.Module;
-            return state;
+            
+            return state.EndGeneration();
         }
 
         private void OverrideToStr(PropInfo[] props, TypeBuilder tb, string name)

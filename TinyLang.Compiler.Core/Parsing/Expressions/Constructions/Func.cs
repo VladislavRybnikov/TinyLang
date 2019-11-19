@@ -22,6 +22,8 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
         public static Expr Invoke(string name, IEnumerable<Expr> args) => new FuncInvocationExpr(name, args);
 
+        public static Expr Return(Expr expr) => new RetExpr(expr);
+
         public FuncExpr(string name, IEnumerable<TypedVar> args, Scope body)
         {
             Name = name;
