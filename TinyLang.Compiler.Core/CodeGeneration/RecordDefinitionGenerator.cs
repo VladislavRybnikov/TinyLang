@@ -28,7 +28,9 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         private void OverrideToStr(PropInfo[] props, TypeBuilder tb, string name)
         {
-            Type[] formatStringArgs = { typeof(string), typeof(object[]) };
+            Type[] formatStringArgs = new[] { typeof(string) }
+            .Append(Enumerable.Range(0, props.Length).Select(_ => typeof(object))).ToArray();
+
             MethodInfo formatString = typeof(string).GetMethod(nameof(string.Format), formatStringArgs);
 
             var mb = tb.DefineMethod("ToString", MethodAttributes.Public | MethodAttributes.HideBySig |
@@ -40,7 +42,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             il.Emit(OpCodes.Nop);
 
             var str = props.Select((p, i) => (prop: p, index: i))
-                .Aggregate(new StringBuilder($"{name}("), (sb, p) => sb.Append($"\n{p.prop.Name}: {{{p.index}}}"))
+                .Aggregate(new StringBuilder($"{name}("), (sb, p) => sb.Append($"\n\t{p.prop.Name}: {{{p.index}}}"))
                 .Append("\n)").ToString();
 
             il.Emit(OpCodes.Ldstr, str);
@@ -49,18 +51,15 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             {
                 il.Emit(OpCodes.Ldarg_0);
 
-                //il.EmitWriteLine(prop.Getter);
-
-               //il.EmitCall(OpCodes.Call, prop.Getter, new[] { prop.Type});
+                //il.EmitCall(OpCodes.Call, prop.Getter, new[] { prop.Type});
                
-               il.Emit(OpCodes.Call, prop.PropertyBuilder.GetMethod);
-
-                il.Emit(OpCodes.Box, prop.Type);
+                il.Emit(OpCodes.Call, prop.PropertyBuilder.GetMethod);
 
                 if (prop.Type.IsValueType)
                 {
                     il.Emit(OpCodes.Box, prop.Type);
                 }
+                il.Emit(OpCodes.Nop);
             }
 
             il.Emit(OpCodes.Call, formatString);

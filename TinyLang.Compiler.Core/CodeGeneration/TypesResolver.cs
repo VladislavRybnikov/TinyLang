@@ -9,7 +9,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
     {
         private static Dictionary<string, Type> _types = new Dictionary<string, Type>
         {
-            { "str", typeof(string)}
+            { "str", typeof(string) },
+            { "int", typeof(int) }
         };
 
         public static Type Resolve(string name, ModuleBuilder module)

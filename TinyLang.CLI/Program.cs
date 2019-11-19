@@ -16,9 +16,9 @@ namespace TinyLang.CLI
             //TinyCLI.Run();
             var parsed = TinyInteractive.Parser.Parse(
                 @"
-                    record User(name: str)
+                    record User(name: str, age: int)
                     
-                    u = new User(""Vlad"")
+                    u = new User(""Vlad"", 20)
 
                     print(u)
                     ");

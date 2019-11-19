@@ -42,7 +42,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         private (Type type, Action emitLoad) LoadVar(Expr expr, ILGenerator ilGenerator, ModuleBuilder moduleBuilder) => expr switch
         {
-            StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldc_I4, str.Value))),
+            StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
             IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
             BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
             RecordCreation record => CreateRecord(record, ilGenerator, moduleBuilder),
@@ -63,10 +63,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             for (int i = 0; i < ctorParams.Length; i++) 
             {
+                //ilGenerator.Emit(OpCodes.Stloc_0);
+                //ilGenerator.Emit(OpCodes.Ldarg_0);
                 LoadVar(providedParams[i], ilGenerator, moduleBuilder).emitLoad();
             }
 
-            ilGenerator.Emit(OpCodes.Newobj, ctor);
+            //ilGenerator.Emit(OpCodes.Newobj, ctor);
 
             return (type, () => ilGenerator.Emit(OpCodes.Newobj, ctor));
         }
