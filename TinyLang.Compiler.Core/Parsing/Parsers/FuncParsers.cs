@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using LanguageExt.Parsec;
 using TinyLang.Compiler.Core.Parsing.Expressions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using static LanguageExt.Parsec.Char;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
 using static TinyLang.Compiler.Core.TinyLanguage;
-using Func = TinyLang.Compiler.Core.Parsing.Expressions.Constructions.Func;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
@@ -24,7 +24,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from type in optional(TypeAssignParser)
                 from body in Scope(parser)
                 where !LanguageDef.ReservedOpNames.Contains(name)
-                select Func.Define(name, type, args, body as Scope);
+                select FuncExpr.Define(name, type, args, body as Scope);
         }
 
         public static Parser<Expr> FuncInvocation(Parser<Expr> parser)
@@ -32,7 +32,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
             return from name in TokenParser.Identifier
                 from args in TokenParser.ParensCommaSep(parser)
                 where !LanguageDef.ReservedOpNames.Contains(name)
-                select Func.Invoke(name, args);
+                select FuncExpr.Invoke(name, args);
         }
     }
 }

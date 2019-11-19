@@ -18,7 +18,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
             return from s in StrValue(ReservedNames.While)
                 from expr in TokenParser.Parens(parser)
                 from scope in Scope(parser)
-                select new While(expr) { Scope = scope as Scope } as Expr;
+                select new WhileExpr(expr) { Scope = scope as Scope } as Expr;
         }
 
         public static Parser<Expr> DoWhile(Parser<Expr> parser)
@@ -27,7 +27,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from scope in Scope(parser)
                 from w in StrValue(ReservedNames.While)
                 from expr in TokenParser.Parens(parser)
-                select new DoWhile(expr) { Scope = scope as Scope } as Expr;
+                select new DoWhileExpr(expr) { Scope = scope as Scope } as Expr;
         }
     }
 }

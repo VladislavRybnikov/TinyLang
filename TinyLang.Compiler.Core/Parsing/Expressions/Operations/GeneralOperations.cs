@@ -28,7 +28,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             public Expr Value { get; }
             public AssignExpr(Expr assigment, Expr value)
             {
-                if (assigment is RecordCreation || assigment is FuncInvocation)
+                if (assigment is RecordCreationExpr || assigment is FuncInvocationExpr)
                 {
                     throw new Exception("Assignment is not allowed");
                 }

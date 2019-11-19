@@ -26,7 +26,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
         {
             return from s in StrValue(ReservedNames.Else)
                    from scope in Scope(parser)
-                   select new Else { Scope = scope as Scope } as Expr;
+                   select new ElseExpr { Scope = scope as Scope } as Expr;
         }
 
         public static Parser<Expr> ElifParser(Parser<Expr> parser)
@@ -34,7 +34,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
             return from s in StrValue(ReservedNames.Elif)
                    from expr in TokenParser.Parens(parser)
                 from scope in Scope(parser)
-                   select new Elif(expr) { Scope = scope as Scope } as Expr;
+                   select new ElifExpr(expr) { Scope = scope as Scope } as Expr;
         }
 
         public static Parser<Expr> IfParser(Parser<Expr> parser)
@@ -42,14 +42,14 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
             return from s in StrValue(ReservedNames.If)
                    from expr in TokenParser.Parens(parser)
                 from scope in Scope(parser)
-                   select new If(expr) { Scope = scope as Scope } as Expr;
+                   select new IfExpr(expr) { Scope = scope as Scope } as Expr;
 
         }
 
-        private static IfElse IfElse(Expr @if, Seq<Expr> elifs, Option<Expr> @else) =>
+        private static IfElseExpr IfElse(Expr @if, Seq<Expr> elifs, Option<Expr> @else) =>
             @else.Match(
-                Some: some => new IfElse(@if as If, elifs.Cast<Elif>().AsEnumerable(), some as Else),
-                None: () => new IfElse(@if as If, elifs.Cast<Elif>().AsEnumerable())
+                Some: some => new IfElseExpr(@if as IfExpr, elifs.Cast<ElifExpr>().AsEnumerable(), some as ElseExpr),
+                None: () => new IfElseExpr(@if as IfExpr, elifs.Cast<ElifExpr>().AsEnumerable())
             );
     }
 }

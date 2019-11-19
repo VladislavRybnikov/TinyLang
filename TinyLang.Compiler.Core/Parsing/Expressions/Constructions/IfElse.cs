@@ -5,13 +5,13 @@ using System.Text;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
-    public class IfElse : Expr
+    public class IfElseExpr : Expr
     {
-        public If If { get; }
-        public IEnumerable<Elif> Elifs { get; }
-        public Else Else { get; }
+        public IfExpr If { get; }
+        public IEnumerable<ElifExpr> Elifs { get; }
+        public ElseExpr Else { get; }
 
-        public IfElse(If @if, IEnumerable<Elif> elifs, Else @else = null)
+        public IfElseExpr(IfExpr @if, IEnumerable<ElifExpr> elifs, ElseExpr @else = null)
         {
             If = @if;
             Elifs = elifs;
@@ -26,10 +26,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
             return $"{If}{elifs}{@else}";
         }
     }
-    public class If : ScopedExpr
+    public class IfExpr : ScopedExpr
     {
         public Expr Predicate { get; }
-        public If(Expr predicate)
+        public IfExpr(Expr predicate)
         {
             Predicate = predicate;
         }
@@ -39,10 +39,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
             return $"If(Predicate({Predicate}), {Scope})";
         }
     }
-    public class Elif : ScopedExpr
+    public class ElifExpr : ScopedExpr
     {
         public Expr Predicate { get; }
-        public Elif(Expr predicate)
+        public ElifExpr(Expr predicate)
         {
             Predicate = predicate;
         }
@@ -53,7 +53,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         }
     }
 
-    public class Else : ScopedExpr
+    public class ElseExpr : ScopedExpr
     {
         public override string ToString()
         {

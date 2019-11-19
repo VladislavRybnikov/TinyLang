@@ -27,7 +27,7 @@ namespace TinyLang.CLI
 
             foreach (var expr in parsed) 
             {
-                CodeGeneratorFactory.For(expr.GetType()).Generate(expr, state);
+                CodeGeneratorsFactory.Instance.GeneratorFor(expr.GetType()).Generate(expr, state);
             }
             state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
             

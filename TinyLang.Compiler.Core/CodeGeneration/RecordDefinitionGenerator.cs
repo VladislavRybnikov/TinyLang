@@ -9,9 +9,9 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
-    public class RecordDefinitionGenerator : CodeGenerator<Record>
+    public class RecordDefinitionGenerator : CodeGenerator<RecordExpr>
     {
-        protected internal override CodeGenerationState GenerateInternal(Record expression, CodeGenerationState state)
+        protected internal override CodeGenerationState GenerateInternal(RecordExpr expression, CodeGenerationState state)
         {
             if (state.State == CodeGenerationStates.Method) throw new Exception("Can not define record in methods");
 
@@ -157,6 +157,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 Setter = setter;
                 PropertyBuilder = pb;
             }
+        }
+
+        public RecordDefinitionGenerator(ICodeGeneratorsFactory factory) : base(factory)
+        {
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
-using FuncInvocation = TinyLang.Compiler.Core.Parsing.Expressions.Constructions.FuncInvocation;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
@@ -14,20 +13,49 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         CodeGenerationState Generate(Expr expression, CodeGenerationState state);
     }
 
-    public static class CodeGeneratorFactory 
+    public interface ICodeGeneratorsFactory
     {
-        private static IDictionary<Type, ICodeGenerator> _genartors = new Dictionary<Type, ICodeGenerator>
-        {
-            { typeof(AssignExpr), new VarDefinitionGenerator() },
-            { typeof(Record), new RecordDefinitionGenerator() },
-            { typeof(FuncInvocation), new MethodCallGenerator() }
-        };
+        ICodeGenerator GeneratorFor(Type type);
+    }
 
-        public static ICodeGenerator For(Type type) => _genartors[type];
+    public class CodeGeneratorsFactory : ICodeGeneratorsFactory
+    {
+        private static CodeGeneratorsFactory _instance;
+
+        private IDictionary<Type, ICodeGenerator> _genartors;
+
+        private CodeGeneratorsFactory() { }
+
+        public ICodeGenerator GeneratorFor(Type type) => _genartors[type];
+
+        public static ICodeGeneratorsFactory Instance
+        {
+            get
+            {
+                if (_instance != null)
+                    return _instance;
+
+                _instance = new CodeGeneratorsFactory();
+                _instance._genartors = new Dictionary<Type, ICodeGenerator>
+                {
+                    { typeof(AssignExpr), new VarDefinitionGenerator(_instance) },
+                    { typeof(RecordExpr), new RecordDefinitionGenerator(_instance) },
+                    { typeof(FuncInvocationExpr), new FuncCallGenerator(_instance) }
+                };
+
+                return _instance;
+            }
+        }
     }
 
     public abstract class CodeGenerator<TExpr> : ICodeGenerator where TExpr : Expr
     {
+        protected readonly ICodeGeneratorsFactory Factory;
+        protected CodeGenerator(ICodeGeneratorsFactory factory)
+        {
+            Factory = factory;
+        }
+
         public CodeGenerationState Generate(Expr expression, CodeGenerationState state)
         {
             return GenerateInternal(expression as TExpr, state);

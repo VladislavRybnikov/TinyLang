@@ -10,6 +10,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 {
     public class VarDefinitionGenerator : CodeGenerator<AssignExpr>
     {
+        public VarDefinitionGenerator(ICodeGeneratorsFactory factory) : base(factory)
+        {
+        }
+
         protected internal override CodeGenerationState GenerateInternal(AssignExpr expression, CodeGenerationState state)
         {
             var ilGenerator = state.State switch
@@ -45,12 +49,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
             IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
             BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
-            RecordCreation record => CreateRecord(record, ilGenerator, moduleBuilder),
+            RecordCreationExpr record => CreateRecord(record, ilGenerator, moduleBuilder),
             _ => throw new Exception("Unsupported variable type")
         };
 
         private (Type type, Action emitLoad) CreateRecord
-            (RecordCreation expr, ILGenerator ilGenerator, ModuleBuilder moduleBuilder)
+            (RecordCreationExpr expr, ILGenerator ilGenerator, ModuleBuilder moduleBuilder)
         {
             var type = moduleBuilder.GetType(expr.Name);
             var ctor = type.GetConstructors()[0];
@@ -61,7 +65,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             if (ctorParams.Length != providedParams.Length)
                 throw new IndexOutOfRangeException("Wrong args");
 
-            for (int i = 0; i < ctorParams.Length; i++) 
+            for (int i = 0; i < ctorParams.Length; i++)
             {
                 //ilGenerator.Emit(OpCodes.Stloc_0);
                 //ilGenerator.Emit(OpCodes.Ldarg_0);

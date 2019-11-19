@@ -4,11 +4,11 @@ using System.Text;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
-    public class While : ScopedExpr
+    public class WhileExpr : ScopedExpr
     {
         Expr Predicate { get; }
 
-        public While(Expr predicate)
+        public WhileExpr(Expr predicate)
         {
             Predicate = predicate;
         }
@@ -19,11 +19,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         }
     }
 
-    public class DoWhile : ScopedExpr
+    public class DoWhileExpr : ScopedExpr
     {
         Expr Predicate { get; }
 
-        public DoWhile(Expr predicate)
+        public DoWhileExpr(Expr predicate)
         {
             Predicate = predicate;
         }

@@ -5,21 +5,21 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
-    public class Record : Expr
+    public class RecordExpr : Expr
     {
         public string Name { get; }
 
         public IEnumerable<TypedVar> Props { get; }
 
-        public Record(string name, IEnumerable<TypedVar> props)
+        public RecordExpr(string name, IEnumerable<TypedVar> props)
         {
             Name = name;
             Props = props;
         }
 
-        public static Expr Define(string name, IEnumerable<TypedVar> props) => new Record(name, props);
+        public static Expr Define(string name, IEnumerable<TypedVar> props) => new RecordExpr(name, props);
 
-        public static Expr New(string name, IEnumerable<Expr> props) => new RecordCreation(name, props);
+        public static Expr New(string name, IEnumerable<Expr> props) => new RecordCreationExpr(name, props);
 
         public override string ToString()
         {
@@ -27,12 +27,12 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         }
     }
 
-    public class RecordCreation : Expr
+    public class RecordCreationExpr : Expr
     {
         public string Name { get; }
         public IEnumerable<Expr> Props { get; }
 
-        public RecordCreation(string name, IEnumerable<Expr> props)
+        public RecordCreationExpr(string name, IEnumerable<Expr> props)
         {
             Name = name;
             Props = props;

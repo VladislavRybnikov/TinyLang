@@ -6,7 +6,7 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
-    public class Func : Expr
+    public class FuncExpr : Expr
     {
         public string Name { get; }
 
@@ -16,13 +16,13 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
         public static Expr Define(string name, Option<TypeExpr> type, IEnumerable<TypedVar> args, Scope body) =>
             type.Match(
-                some => new TypedFunc(name, some, args, body),
-                () => new Func(name, args, body)
+                some => new TypedFuncExpr(name, some, args, body),
+                () => new FuncExpr(name, args, body)
             );
 
-        public static Expr Invoke(string name, IEnumerable<Expr> args) => new FuncInvocation(name, args);
+        public static Expr Invoke(string name, IEnumerable<Expr> args) => new FuncInvocationExpr(name, args);
 
-        public Func(string name, IEnumerable<TypedVar> args, Scope body)
+        public FuncExpr(string name, IEnumerable<TypedVar> args, Scope body)
         {
             Name = name;
             Args = args;
@@ -35,11 +35,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         }
     }
 
-    public class TypedFunc : Func
+    public class TypedFuncExpr : FuncExpr
     {
         public TypeExpr Type { get; }
 
-        public TypedFunc(string name, TypeExpr type, IEnumerable<TypedVar> args, Scope body) : base(name, args, body)
+        public TypedFuncExpr(string name, TypeExpr type, IEnumerable<TypedVar> args, Scope body) : base(name, args, body)
         {
             Type = type;
         }
@@ -50,13 +50,13 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         }
     }
 
-    public class FuncInvocation : Expr
+    public class FuncInvocationExpr : Expr
     {
         public string Name { get; }
 
         public IEnumerable<Expr> Args { get; }
 
-        public FuncInvocation(string name, IEnumerable<Expr> args)
+        public FuncInvocationExpr(string name, IEnumerable<Expr> args)
         {
             Name = name;
             Args = args;
@@ -65,6 +65,21 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         public override string ToString()
         {
             return $"Invoke(Name({Name}), Args({string.Join(", ", Args)}))";
+        }
+    }
+
+    public class RetExpr : Expr
+    {
+        public Expr Expr { get; }
+
+        public RetExpr(Expr expr)
+        {
+            Expr = expr;
+        }
+
+        public override string ToString()
+        {
+            return $"Ret({Expr})";
         }
     }
 }

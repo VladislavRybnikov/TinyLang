@@ -19,7 +19,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from s in spaces
                 from n in TokenParser.Identifier
                 from p in propsParser
-                select Record.Define(n, p);
+                select RecordExpr.Define(n, p);
         }
 
         public static Parser<Expr> RecordCreation(Parser<Expr> parser)
@@ -29,7 +29,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 from name in TokenParser.Identifier
                 from props in TokenParser.ParensCommaSep(parser)
                 where !LanguageDef.ReservedOpNames.Contains(name)
-                select Record.New(name, props);
+                select RecordExpr.New(name, props);
         }
     }
 }

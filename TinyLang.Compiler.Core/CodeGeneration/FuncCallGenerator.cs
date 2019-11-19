@@ -8,9 +8,9 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperat
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
-    public class MethodCallGenerator : CodeGenerator<FuncInvocation>
+    public class FuncCallGenerator : CodeGenerator<FuncInvocationExpr>
     {
-        protected internal override CodeGenerationState GenerateInternal(FuncInvocation expression, CodeGenerationState state)
+        protected internal override CodeGenerationState GenerateInternal(FuncInvocationExpr expression, CodeGenerationState state)
         {
             var method = state.DefinedMethods[expression.Name];
             var args = expression.Args.ToArray();
@@ -38,6 +38,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             il.EmitCall(OpCodes.Call, method, argsTypes.ToArray());
 
             return state;
+        }
+
+        public FuncCallGenerator(ICodeGeneratorsFactory factory) : base(factory)
+        {
         }
     }
 }
