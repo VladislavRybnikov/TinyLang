@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
@@ -13,7 +14,14 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         protected internal override CodeGenerationState GenerateInternal(RetExpr expression, CodeGenerationState state)
         {
-            Factory.GeneratorFor(expression.Expr.GetType()).Generate(expression.Expr, state);
+            if (expression.Expr is GeneralOperations.VarExpr v)
+            {
+                LoadVar(v, state.MethodBuilder.GetILGenerator(), state).emitLoad();
+            }
+            else
+            {
+                Factory.GeneratorFor(expression.Expr.GetType()).Generate(expression.Expr, state);
+            }
 
             return state;
         }

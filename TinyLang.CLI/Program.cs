@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Threading.Tasks;
-using TinyLang.CLI.Types;
-using TinyLang.Compiler.Core;
+﻿using TinyLang.Compiler.Core;
 using TinyLang.Compiler.Core.CodeGeneration;
 using TinyLang.Compiler.Core.Parsing;
 using TinyLang.Compiler.Core.Parsing.Expressions;
-using static TinyLang.Compiler.Core.ExpressionEvaluator;
 using static TinyLang.Compiler.Core.TinyLanguage;
 
 namespace TinyLang.CLI
@@ -17,16 +11,19 @@ namespace TinyLang.CLI
         static void Main(string[] args)
         {
             var funcExample = @"
-                    type User(name: str, userType: str)
-                    func createAdmin(name: str)
+                    type User(name: str, userType: str, age: int)
+                    func createAdmin(name: str, age: int)
                     {
-                        return new User(name, ""admin"")
+                        r = new User(name, ""admin"", age)
+
+                        return r
                     }
                     
-                    u = createAdmin(""Vlad"")
+                    u = createAdmin(""Vlad"", 20)
 
                     print(u)
                     ";
+            //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
 
             //TinyCLI.Run();
             TinyCompiler.Create(
@@ -34,6 +31,7 @@ namespace TinyLang.CLI
                 new ExprTokenizer(),
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
+                //.WithCodeSource(samplePath, SourceType.File)
                 .WithCodeSource(funcExample, SourceType.String)
                 .Run();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection.Emit;
 using System.Text;
 using LanguageExt.Parsec;
@@ -49,7 +50,9 @@ namespace TinyLang.Compiler.Core
 
         public void Run()
         {
-            var parsed = sourceType == SourceType.String ? TinyInteractive.Parser.Parse(source) : null;
+            var code = sourceType == SourceType.String ? source : File.ReadAllText(source);
+
+            var parsed = TinyInteractive.Parser.Parse(code);
 
             var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
             foreach (var expr in parsed)
@@ -71,6 +74,7 @@ namespace TinyLang.Compiler.Core
         public ICompiler WithCodeSource(string source, SourceType sourceType)
         {
             this.source = source;
+            this.sourceType = sourceType;
             return this;
         }
     }
