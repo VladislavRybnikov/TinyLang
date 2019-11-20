@@ -15,7 +15,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
             var propsParser = from x in TokenParser.ParensCommaSep(TypedVarParser)
                 select x.AsEnumerable().Cast<TypedVar>();
 
-            return from r in StrValue("record")
+            return from r in StrValue(ReservedNames.Record)
                 from s in spaces
                 from n in TokenParser.Identifier
                 from p in propsParser

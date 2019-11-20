@@ -17,21 +17,13 @@ namespace TinyLang.CLI
         static void Main(string[] args)
         {
             var funcExample = @"
-                    record User(name: str, type: str)
+                    type User(name: str, userType: str)
                     func createAdmin(name: str)
                     {
                         return new User(name, ""admin"")
                     }
                     
                     u = createAdmin(""Vlad"")
-
-                    print(u)
-                    ";
-
-            var typeExample = @"
-                    record User(name: str, type: str)
-                   
-                    u = new User(""Vlad"", ""admin"")
 
                     print(u)
                     ";
