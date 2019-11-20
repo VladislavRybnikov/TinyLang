@@ -62,7 +62,7 @@ namespace TinyLang.Compiler.Core
                 LessOrEqExpr lessOrEq => Compare(Evaluate(lessOrEq.Left), Evaluate(lessOrEq.Right), (l, r) => l <= r),
                 MoreExpr more => Compare(Evaluate(more.Left), Evaluate(more.Right), (l, r) => l > r),
                 MoreOrEqExpr moreOrEq => Compare(Evaluate(moreOrEq.Left), Evaluate(moreOrEq.Right), (l, r) => l >= r),
-                IfExpr @if => @if.Then switch 
+                TernaryIfExpr @if => @if.Then switch 
                 {
                     ChooseExpr ch => (bool)Evaluate(@if.Condition).Value ? Evaluate(ch.Left) : Evaluate(ch.Right),
                     _ => throw new Exception("Expected ':' operator")

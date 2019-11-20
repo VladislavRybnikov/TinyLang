@@ -5,14 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CodeGeneration\Loaders\**" />
+    <EmbeddedResource Remove="CodeGeneration\Loaders\**" />
+    <None Remove="CodeGeneration\Loaders\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="3.3.29" />
     <PackageReference Include="LanguageExt.Parsec" Version="3.3.29" />
     <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CodeGeneration\Loaders\" />
   </ItemGroup>
 
 </Project>

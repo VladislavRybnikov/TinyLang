@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
-using TinyLang.Compiler.Core.Parsing.Expressions.Types;
-using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
-namespace TinyLang.Compiler.Core.CodeGeneration
+namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 {
     public class FuncCallGenerator : CodeGenerator<FuncInvocationExpr>
     {

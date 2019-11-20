@@ -11,7 +11,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         public IEnumerable<ElifExpr> Elifs { get; }
         public ElseExpr Else { get; }
 
-        public IfElseExpr(IfExpr @if, IEnumerable<ElifExpr> elifs, ElseExpr @else = null)
+        public IfElseExpr(IfExpr @if, IEnumerable<ElifExpr> elifs = null, ElseExpr @else = null)
         {
             If = @if;
             Elifs = elifs;

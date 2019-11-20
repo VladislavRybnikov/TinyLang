@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions
@@ -10,6 +11,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         public Scope(List<Expr> statements) 
         {
             Statements = statements;
+        }
+
+        public Scope(params Expr[] statements)
+        {
+            Statements = statements.ToList();
         }
 
         public Scope() 

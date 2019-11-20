@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+﻿using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
-namespace TinyLang.Compiler.Core.CodeGeneration
+namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 {
     public class RecordCreationGenerator : CodeGenerator<RecordCreationExpr>
     {

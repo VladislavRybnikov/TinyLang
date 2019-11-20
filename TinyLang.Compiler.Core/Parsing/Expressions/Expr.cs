@@ -26,7 +26,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         public static Expr LessOrEq(Expr left, Expr right) => new LessOrEqExpr(left, right);
         public static Expr More(Expr left, Expr right) => new MoreExpr(left, right);
         public static Expr MoreOrEq(Expr left, Expr right) => new MoreOrEqExpr(left, right);
-        public static Expr If(Expr condition, Expr result) => new IfExpr(condition, result);
+        public static Expr If(Expr condition, Expr result) => new TernaryIfExpr(condition, result);
         public static Expr Choose(Expr left, Expr right) => new ChooseExpr(left, right);
     }
 }

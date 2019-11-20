@@ -12,11 +12,13 @@ namespace TinyLang.CLI
         {
             var funcExample = @"
                     type User(name: str, userType: str, age: int)
+
                     func createAdmin(name: str, age: int)
                     {
-                        r = new User(name, ""admin"", age)
+                        adminType = ""admin""
+                        result = new User(name, adminType, age)
 
-                        return r
+                        return result
                     }
                     
                     u = createAdmin(""Vlad"", 20)

@@ -43,13 +43,13 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             }
         }
 
-        public class IfExpr : Expr
+        public class TernaryIfExpr : Expr
         {
             public Expr Condition { get; }
 
             public Expr Then { get; }
 
-            public IfExpr(Expr condition, Expr then)
+            public TernaryIfExpr(Expr condition, Expr then)
             {
                 Condition = condition;
                 Then = then;
@@ -58,6 +58,19 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             public override string ToString()
             {
                 return $"If({Condition}, {Then})";
+            }
+
+            public IfElseExpr ToIfElse()
+            {
+                if (!(Then is ChooseExpr (var left, var right))) throw new Exception("invalidExpr");
+
+                var ifExpr = new IfExpr(Condition);
+                ifExpr.Scope = new Scope(left);
+                var elseExpr = new ElseExpr();
+                elseExpr.Scope = new Scope(right);
+
+                return new IfElseExpr(ifExpr, @else: elseExpr);
+
             }
         }
 
@@ -70,6 +83,12 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
             {
                 Left = left;
                 Right = right;
+            }
+
+            public void Deconstruct(out Expr left, out Expr right)
+            {
+                left = Left;
+                right = Right;
             }
 
             public override string ToString()
