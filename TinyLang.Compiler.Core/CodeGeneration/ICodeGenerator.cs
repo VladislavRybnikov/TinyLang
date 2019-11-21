@@ -48,7 +48,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                     { typeof(FuncInvocationExpr), new FuncCallGenerator(_instance) },
                     { typeof(FuncExpr), new FuncDefinitionGenerator(_instance) },
                     { typeof(RetExpr), new FuncReturnGenerator(_instance) },
-                    { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) }
+                    { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
+                    { typeof(IfElseExpr), new IfElseGenerator(_instance) }
                 };
 
                 return _instance;
@@ -81,6 +82,14 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             FuncInvocationExpr f => InvokeFunc(f, ilGenerator, state),
             _ => throw new Exception("Unsupported variable type")
         };
+
+        protected void LoadScope(Scope scope, CodeGenerationState state)
+        {
+            foreach (var s in scope.Statements)
+            {
+                Factory.GeneratorFor(s.GetType()).Generate(s, state);
+            }
+        }
 
         protected (Type type, Action emitLoad) LoadFromMethodScope(VarExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)

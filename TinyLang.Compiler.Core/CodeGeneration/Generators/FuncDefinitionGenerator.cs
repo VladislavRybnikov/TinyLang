@@ -22,10 +22,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
             args.ForEach(x => state.MethodArgs.Add(x.Name, x));
 
-            foreach (var s in expression.Body.Statements)
-            {
-                Factory.GeneratorFor(s.GetType()).Generate(s, state);
-            }
+            LoadScope(expression.Body, state);
 
             var il = state.MethodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ret);

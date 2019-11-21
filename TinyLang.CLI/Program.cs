@@ -16,6 +16,12 @@ namespace TinyLang.CLI
                     func createAdmin(name: str, age: int)
                     {
                         adminType = ""admin""
+                        
+                        if(false)
+                        {
+                            adminType = ""admin1""
+                        }
+
                         result = new User(name, adminType, age)
 
                         return result
