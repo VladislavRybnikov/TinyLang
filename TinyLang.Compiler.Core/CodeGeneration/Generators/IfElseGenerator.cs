@@ -23,38 +23,67 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
                 ? state.MethodBuilder.GetILGenerator()
                 : state.MainMethodBuilder.GetILGenerator();
 
+            var ifLabel = il.DefineLabel();
             var elseLabel = il.DefineLabel();
+            var endLabel = il.DefineLabel();
 
-            new[] {(expression.If.Predicate, expression.If.Scope)}
-                .Append(expression.Elifs.Select(x => (x.Predicate, x.Scope)))
-                .Select(x => (x.Predicate, x.Scope, Label: il.DefineLabel()))
-                .Select(x => GenerateConditionalBranch(x.Predicate, x.Scope, state, il, x.Label)).ToList()
-                .ForEach(x => x());
+            var labels = new []{ (expression.If.Predicate, expression.If.Scope, ifLabel) }
+                .Append(expression.Elifs.Select(x => (x.Predicate, x.Scope, Label: il.DefineLabel()))).ToList(); // elif's labels
 
             if (expression.Else != null)
             {
-                StartScope(expression.Else.Scope, elseLabel, il, state);
+                labels.Add((null, expression.Else.Scope, elseLabel));
             }
+
+            labels.Add((null, null, endLabel));
+            var labelsArr = labels.ToArray();
+            var actions = new List<Action<Label>>();
+
+            LabelsInfo LabelsInfo(Label current, Label next)
+                => new LabelsInfo { Current = current, Next = next, Final = endLabel };
+
+            for (int i = 0; i < labelsArr.Length - 1; i++)
+            {
+                var (p, s, l) = labelsArr[i];
+                var (_, _, nextL) = labelsArr[i + 1];
+
+                var info = LabelsInfo(l, nextL);
+                GenerateConditionalBranch(p, s, state, il, info);
+            }
+
+            actions.ForEach(x => x(endLabel));
+
+            il.MarkLabel(endLabel);
+            il.Emit(OpCodes.Nop);
 
             return state;
         }
 
-        private Action GenerateConditionalBranch(Expr predicate, Scope scope, CodeGenerationState state, ILGenerator il, Label label)
+        private void GenerateConditionalBranch(Expr predicate, Scope scope, CodeGenerationState state, 
+            ILGenerator il, LabelsInfo labels)
         {
-            var (type, emit) = LoadVar(predicate, il, state);
+            il.MarkLabel(labels.Current);
+            if (predicate != null)
+            {
+                var (type, emit) = LoadVar(predicate, il, state);
 
-            if (type != typeof(bool))
-                throw new Exception("Wrong predicate value");
+                if (type != typeof(bool))
+                    throw new Exception("Wrong predicate value");
 
-            emit();
-            il.Emit(OpCodes.Brtrue_S, label);
+                emit();
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldc_I4_1);
+            }
 
-            return () => StartScope(scope, label, il, state);
+            il.Emit(OpCodes.Brfalse, labels.Next);
+
+            StartScope(scope, il, state, labels.Final);
         }
 
-        private void StartScope(Scope scope, Label label, ILGenerator il, CodeGenerationState state)
+        private void StartScope(Scope scope, ILGenerator il, CodeGenerationState state, Label final)
         {
-            il.MarkLabel(label);
             if (_isTernary)
             {
                 LoadVar(scope.Statements.FirstOrDefault(), il, state);
@@ -63,6 +92,16 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             {
                 LoadScope(scope, state);
             }
+            il.Emit(OpCodes.Br, final);
+        }
+
+        private class LabelsInfo 
+        {
+            public Label Current { get; set; }
+
+            public Label Next { get; set; }
+
+            public Label Final { get; set; }
         }
     }
 }

@@ -17,9 +17,17 @@ namespace TinyLang.CLI
                     {
                         adminType = ""admin""
                         
-                        if(false)
+                        if(true)
                         {
                             adminType = ""admin1""
+                        }
+                        elif(true)
+                        {
+                            adminType = ""admin2""
+                        }
+                        else
+                        {
+                            adminType = ""admin3""
                         }
 
                         result = new User(name, adminType, age)
@@ -31,6 +39,7 @@ namespace TinyLang.CLI
 
                     print(u)
                     ";
+
             //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
 
             //TinyCLI.Run();

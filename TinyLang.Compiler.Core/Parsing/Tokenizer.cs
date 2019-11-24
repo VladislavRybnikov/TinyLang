@@ -51,7 +51,7 @@ namespace TinyLang.Compiler.Core.Parsing
         private Parser<Expr> Compose(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
         {
             var parsers = funcs.Select(f => f(attempt(lazyp(() => parser)))).ToArray();
-            parser = either(attempt(parser), choice(parsers));
+            parser = either(attempt(choice(parsers)), parser);
 
             return parser;
         }

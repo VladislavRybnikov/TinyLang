@@ -39,8 +39,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             var il = mb.GetILGenerator();
             il.Emit(OpCodes.Nop);
 
-            var propsStr = string.Join(", ", props.Select((p, i) => (prop: p, index: i)).Select(x => $"{x.prop.Name}({{{x.index}}}))"));
-            var str = $"({name}({propsStr}))";
+            var propsStr = string.Join(", ", props.Select((p, i) => (prop: p, index: i)).Select(x => $"{x.prop.Name}({{{x.index}}})"));
+            var str = $"{name}({propsStr})";
 
             il.Emit(OpCodes.Ldstr, str);
 
