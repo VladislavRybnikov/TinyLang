@@ -51,16 +51,33 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             var print = state.ModuleBuilder.DefineGlobalMethod("print", MethodAttributes.Public | MethodAttributes.Static,
                 typeof(void), new[] { typeof(object) });
+
             var il = print.GetILGenerator();
 
             il.Emit(OpCodes.Ldarg_0);
-            var writeLine = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
+
+            var writeLineObj = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
                 Type.DefaultBinder, new[] { typeof(object) }, null);
 
-            il.EmitCall(OpCodes.Call, writeLine, new[] { typeof(object) });
+            il.EmitCall(OpCodes.Call, writeLineObj, new[] { typeof(string) });
             il.Emit(OpCodes.Ret);
 
+            // print num
+            var printN = state.ModuleBuilder.DefineGlobalMethod("printN", MethodAttributes.Public | MethodAttributes.Static,
+                typeof(void), new[] { typeof(int) });
+
+            var ilN = printN.GetILGenerator();
+
+            ilN.Emit(OpCodes.Ldarg_0);
+
+            var writeLineNum = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
+                Type.DefaultBinder, new[] { typeof(int) }, null);
+
+            ilN.EmitCall(OpCodes.Call, writeLineNum, new[] { typeof(int) });
+            ilN.Emit(OpCodes.Ret);
+
             state.DefinedMethods.Add("print", print);
+            state.DefinedMethods.Add("printN", printN);
 
             return state;
         }

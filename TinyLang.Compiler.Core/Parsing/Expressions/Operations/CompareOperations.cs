@@ -1,106 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
+﻿namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
     public static class CompareOperations
     {
-        public class EqExpr : Expr
+        public class EqExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public EqExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"Eq({Left}, {Right})";
-            }
+            public EqExpr(Expr left, Expr right) : base(left, right){ }
         }
 
-        public class NotEqExpr : Expr
+        public class NotEqExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public NotEqExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"NotEq({Left}, {Right})";
-            }
+            public NotEqExpr(Expr left, Expr right) : base(left, right){ }
         }
 
-        public class LessExpr : Expr
+        public class LessExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public LessExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"Less({Left}, {Right})";
-            }
+            public LessExpr(Expr left, Expr right) : base(left, right){ }
         }
 
-        public class LessOrEqExpr : Expr
+        public class LessOrEqExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public LessOrEqExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"LessOrEq({Left}, {Right})";
-            }
+            public LessOrEqExpr(Expr left, Expr right) : base(left, right) { }
         }
 
-        public class MoreExpr : Expr 
+        public class MoreExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public MoreExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"More({Left}, {Right})";
-            }
+            public MoreExpr(Expr left, Expr right) : base(left, right) { }
 
         }
 
-        public class MoreOrEqExpr : Expr 
+        public class MoreOrEqExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public MoreOrEqExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"MoreOrEq({Left}, {Right})";
-            }
+            public MoreOrEqExpr(Expr left, Expr right) : base(left, right) { }
         }
     }
 }

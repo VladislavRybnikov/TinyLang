@@ -40,6 +40,11 @@ namespace TinyLang.CLI
                     print(u)
                     ";
 
+            var addExample = @"
+a = 2 + 1 + 4
+printN(a)
+";
+
             //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
 
             //TinyCLI.Run();
@@ -49,7 +54,7 @@ namespace TinyLang.CLI
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
                 //.WithCodeSource(samplePath, SourceType.File)
-                .WithCodeSource(funcExample, SourceType.String)
+                .WithCodeSource(addExample, SourceType.String)
                 .Run();
 
         }

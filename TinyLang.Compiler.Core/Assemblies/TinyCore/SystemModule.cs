@@ -21,14 +21,14 @@ namespace TinyLang.Compiler.Core.Assemblies.TinyCore
 
         private void AddPrintMethod()
         {
-            MethodBuilder print = ModuleBuilder.DefineGlobalMethod("print", MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, typeof(void), new []{typeof(string)});
+            MethodBuilder print = ModuleBuilder.DefineGlobalMethod("print", MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, typeof(void), new []{typeof(object)});
 
             ILGenerator il = print.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
-            var writeLine = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, 
-                Type.DefaultBinder, new[] { typeof(string) }, null);
+            var writeLine = typeof(Console).GetMethod(nameof(Console.WriteLine), BindingFlags.Public | BindingFlags.Static, 
+                Type.DefaultBinder, new[] { typeof(object) }, null);
 
-            il.EmitCall(OpCodes.Call, writeLine, new[] { typeof(string) });
+            il.EmitCall(OpCodes.Call, writeLine, new[] { typeof(object) });
             il.Emit(OpCodes.Ret);
         }
     }

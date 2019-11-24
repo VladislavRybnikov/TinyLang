@@ -4,10 +4,13 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.CodeGeneration.Generators;
+using TinyLang.Compiler.Core.CodeGeneration.Types;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
 {
@@ -72,14 +75,15 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         protected internal abstract CodeGenerationState GenerateInternal(TExpr expression, CodeGenerationState state);
 
-        protected (Type type, Action emitLoad) LoadVar(Expr expr, ILGenerator ilGenerator, CodeGenerationState state) => expr switch
+        protected TypedLoader VarLoader(Expr expr, ILGenerator ilGenerator, CodeGenerationState state) => expr switch
         {
-            VarExpr v => LoadFromMethodScope(v, ilGenerator, state),
+            VarExpr v => MethodScopeLoader(v, ilGenerator, state),
             StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
             IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
             BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
-            RecordCreationExpr record => CreateRecord(record, ilGenerator, state),
-            FuncInvocationExpr f => InvokeFunc(f, ilGenerator, state),
+            RecordCreationExpr record => RecordLoader(record, ilGenerator, state),
+            FuncInvocationExpr f => FuncLoader(f, ilGenerator, state),
+            BinaryExpr bin => BinaryExprLoader(bin, ilGenerator, state),
             _ => throw new Exception("Unsupported variable type")
         };
 
@@ -91,7 +95,26 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             }
         }
 
-        protected (Type type, Action emitLoad) LoadFromMethodScope(VarExpr expr, ILGenerator ilGenerator,
+        protected TypedLoader BinaryExprLoader(BinaryExpr expr, ILGenerator ilGenerator, 
+            CodeGenerationState state)
+        {
+            var leftLoader = VarLoader(expr.Left, ilGenerator, state);
+            var rightLoader = VarLoader(expr.Right, ilGenerator, state);
+
+            return expr switch
+            {
+                AddExpr add => (leftLoader.Type, () => 
+                {
+                    leftLoader.Load();
+                    rightLoader.Load();
+
+                    ilGenerator.Emit(OpCodes.Add);
+                })
+            };
+
+        }
+
+        protected TypedLoader MethodScopeLoader(VarExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)
         {
             if (state.State == CodeGenerationStates.Method)
@@ -116,7 +139,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             throw new Exception("Can not resolve variable");
         }
 
-        protected (Type type, Action emitLoad) CreateRecord
+        protected TypedLoader RecordLoader
            (RecordCreationExpr expr, ILGenerator ilGenerator, CodeGenerationState state)
         {
             var type = state.ModuleBuilder.GetType(expr.Name);
@@ -130,17 +153,13 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             for (int i = 0; i < ctorParams.Length; i++)
             {
-                //ilGenerator.Emit(OpCodes.Stloc_0);
-                //ilGenerator.Emit(OpCodes.Ldarg_0);
-                LoadVar(providedParams[i], ilGenerator, state).emitLoad();
+                VarLoader(providedParams[i], ilGenerator, state).Load();
             }
-
-            //ilGenerator.Emit(OpCodes.Newobj, ctor);
 
             return (type, () => ilGenerator.Emit(OpCodes.Newobj, ctor));
         }
 
-        protected (Type type, Action emitLoad) InvokeFunc
+        protected TypedLoader FuncLoader
             (FuncInvocationExpr expr, ILGenerator ilGenerator, CodeGenerationState state)
         {
             var generator = Factory.GeneratorFor<FuncInvocationExpr>();

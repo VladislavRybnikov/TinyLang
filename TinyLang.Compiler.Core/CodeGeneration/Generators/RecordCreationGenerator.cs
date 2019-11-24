@@ -14,7 +14,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             var ilGenerator = state.State == CodeGenerationStates.Method
                 ? state.MethodBuilder.GetILGenerator() : state.MainMethodBuilder.GetILGenerator();
 
-            CreateRecord(expression, ilGenerator, state).emitLoad();
+            RecordLoader(expression, ilGenerator, state).Load();
 
             return state;
         }

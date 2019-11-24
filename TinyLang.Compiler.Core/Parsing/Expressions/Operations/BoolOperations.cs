@@ -1,42 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
+﻿namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
     public static class BoolOperations
     {
-        public class AndExpr : Expr
+        public class AndExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-            public AndExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"And({Left}, {Right})";
-            }
+            public AndExpr(Expr left, Expr right) : base(left, right){ }
         }
 
-        public class OrExpr : Expr 
+        public class OrExpr : BinaryExpr
         {
-            public Expr Left { get; }
-            public Expr Right { get; }
-
-            public OrExpr(Expr left, Expr right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public override string ToString()
-            {
-                return $"Or({Left}, {Right})";
-            }
+            public OrExpr(Expr left, Expr right) : base(left, right){ }
         }
 
         public class NotExpr : Expr 
