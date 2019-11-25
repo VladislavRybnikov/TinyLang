@@ -17,6 +17,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             {
                 var (type, emitLoad) = ValueLoader(a, il, state);
                 emitLoad();
+                if(type.IsValueType && expression.Name == "print" || expression.Name ==  "printF") 
+                {
+                    il.Emit(OpCodes.Box, type);
+                }
                 return type;
             }).ToList();
 

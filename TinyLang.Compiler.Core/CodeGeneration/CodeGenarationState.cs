@@ -51,8 +51,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 typeof(void), new Type[0]);
 
             Methods.AddPrint(state);
-            Methods.AddPrintN(state);
-            Methods.AddPrintB(state);
+            Methods.AddPrintF(state);
             return state;
         }
 

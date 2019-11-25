@@ -41,8 +41,8 @@ namespace TinyLang.CLI
                     ";
 
             var addExample = @"
-a = 2 == 2
-printB(a)
+a = 123
+printF(""a = {0}"", 123)
 ";
 
             var checkAgeExample = @"
@@ -70,7 +70,7 @@ print(checkAge(23))
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
                 //.WithCodeSource(samplePath, SourceType.File)
-                .WithCodeSource(checkAgeExample, SourceType.String)
+                .WithCodeSource(addExample, SourceType.String)
                 .Run();
 
         }

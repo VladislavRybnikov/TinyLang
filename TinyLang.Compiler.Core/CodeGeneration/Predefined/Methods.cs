@@ -20,46 +20,29 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Predefined
             var writeLineObj = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
                 Type.DefaultBinder, new[] { typeof(object) }, null);
 
-            il.EmitCall(OpCodes.Call, writeLineObj, new[] { typeof(string) });
+            il.EmitCall(OpCodes.Call, writeLineObj, new[] { typeof(object) });
             il.Emit(OpCodes.Ret);
 
             state.DefinedMethods.Add("print", print);
         }
 
-        public static void AddPrintN(CodeGenerationState state)
+        public static void AddPrintF(CodeGenerationState state) 
         {
-            var printN = state.ModuleBuilder.DefineGlobalMethod("printN", MethodAttributes.Public | MethodAttributes.Static,
-                typeof(void), new[] { typeof(int) });
+            var printF = state.ModuleBuilder.DefineGlobalMethod("printF", MethodAttributes.Public | MethodAttributes.Static,
+                typeof(void), new[] { typeof(string), typeof(object) });
 
-            var ilN = printN.GetILGenerator();
+            var ilF = printF.GetILGenerator();
 
-            ilN.Emit(OpCodes.Ldarg_0);
+            ilF.Emit(OpCodes.Ldarg_0);
+            ilF.Emit(OpCodes.Ldarg_1);
 
-            var writeLineNum = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
-                Type.DefaultBinder, new[] { typeof(int) }, null);
+            var writeLineF = typeof(Console).GetMethod(nameof(Console.WriteLine), BindingFlags.Public | BindingFlags.Static,
+                Type.DefaultBinder, new[] { typeof(string), typeof(object) }, null);
 
-            ilN.EmitCall(OpCodes.Call, writeLineNum, new[] { typeof(int) });
-            ilN.Emit(OpCodes.Ret);
+            ilF.EmitCall(OpCodes.Call, writeLineF, new[] { typeof(string), typeof(object) });
+            ilF.Emit(OpCodes.Ret);
 
-            state.DefinedMethods.Add("printN", printN);
-        }
-
-        public static void AddPrintB(CodeGenerationState state)
-        {
-            var printB = state.ModuleBuilder.DefineGlobalMethod("printB", MethodAttributes.Public | MethodAttributes.Static,
-                typeof(void), new[] { typeof(bool) });
-
-            var ilB = printB.GetILGenerator();
-
-            ilB.Emit(OpCodes.Ldarg_0);
-
-            var writeLineNum = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
-                Type.DefaultBinder, new[] { typeof(bool) }, null);
-
-            ilB.EmitCall(OpCodes.Call, writeLineNum, new[] { typeof(bool) });
-            ilB.Emit(OpCodes.Ret);
-
-            state.DefinedMethods.Add("printB", printB);
+            state.DefinedMethods.Add("printF", printF);
         }
     }
 }
