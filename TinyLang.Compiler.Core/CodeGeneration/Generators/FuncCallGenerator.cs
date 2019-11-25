@@ -15,7 +15,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
             var argsTypes = args.Select(a =>
             {
-                var (type, emitLoad) = VarLoader(a, il, state);
+                var (type, emitLoad) = ValueLoader(a, il, state);
                 emitLoad();
                 return type;
             }).ToList();

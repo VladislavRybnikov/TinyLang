@@ -9,6 +9,7 @@ using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations;
 
@@ -17,47 +18,6 @@ namespace TinyLang.Compiler.Core.CodeGeneration
     public interface ICodeGenerator
     {
         CodeGenerationState Generate(Expr expression, CodeGenerationState state);
-    }
-
-    public interface ICodeGeneratorsFactory
-    {
-        ICodeGenerator GeneratorFor(Type type);
-        ICodeGenerator GeneratorFor<T>() where T : Expr;
-    }
-
-    public class CodeGeneratorsFactory : ICodeGeneratorsFactory
-    {
-        private static CodeGeneratorsFactory _instance;
-
-        private IDictionary<Type, ICodeGenerator> _genartors;
-
-        private CodeGeneratorsFactory() { }
-
-        public ICodeGenerator GeneratorFor(Type type) => _genartors[type];
-        public ICodeGenerator GeneratorFor<T>() where T : Expr => _genartors[typeof(T)];
-
-        public static ICodeGeneratorsFactory Instance
-        {
-            get
-            {
-                if (_instance != null)
-                    return _instance;
-
-                _instance = new CodeGeneratorsFactory();
-                _instance._genartors = new Dictionary<Type, ICodeGenerator>
-                {
-                    { typeof(AssignExpr), new VarDefinitionGenerator(_instance) },
-                    { typeof(RecordExpr), new RecordDefinitionGenerator(_instance) },
-                    { typeof(FuncInvocationExpr), new FuncCallGenerator(_instance) },
-                    { typeof(FuncExpr), new FuncDefinitionGenerator(_instance) },
-                    { typeof(RetExpr), new FuncReturnGenerator(_instance) },
-                    { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
-                    { typeof(IfElseExpr), new IfElseGenerator(_instance) }
-                };
-
-                return _instance;
-            }
-        }
     }
 
     public abstract class CodeGenerator<TExpr> : ICodeGenerator where TExpr : Expr
@@ -75,14 +35,14 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         protected internal abstract CodeGenerationState GenerateInternal(TExpr expression, CodeGenerationState state);
 
-        protected TypedLoader VarLoader(Expr expr, ILGenerator ilGenerator, CodeGenerationState state) => expr switch
+        protected TypedLoader ValueLoader(Expr expr, ILGenerator ilGenerator, CodeGenerationState state) => expr switch
         {
             VarExpr v => MethodScopeLoader(v, ilGenerator, state),
             StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
             IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
             BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
             RecordCreationExpr record => RecordLoader(record, ilGenerator, state),
-            FuncInvocationExpr f => FuncLoader(f, ilGenerator, state),
+            FuncInvocationExpr f => FuncCallLoader(f, ilGenerator, state),
             BinaryExpr bin => BinaryExprLoader(bin, ilGenerator, state),
             _ => throw new Exception("Unsupported variable type")
         };
@@ -95,23 +55,26 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             }
         }
 
-        protected TypedLoader BinaryExprLoader(BinaryExpr expr, ILGenerator ilGenerator, 
+        protected TypedLoader BinaryExprLoader(BinaryExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)
         {
-            var leftLoader = VarLoader(expr.Left, ilGenerator, state);
-            var rightLoader = VarLoader(expr.Right, ilGenerator, state);
+            var leftLoader = ValueLoader(expr.Left, ilGenerator, state);
+            var rightLoader = ValueLoader(expr.Right, ilGenerator, state);
 
-            return expr switch
+            (Action<ILGenerator> operation, Type type) = expr switch
             {
-                AddExpr add => (leftLoader.Type, () => 
-                {
-                    leftLoader.Load();
-                    rightLoader.Load();
-
-                    ilGenerator.Emit(OpCodes.Add);
-                })
+                AddExpr _ => (EmitSingle(OpCodes.Add), typeof(int)),
+                SubtrExpr _ => (EmitSingle(OpCodes.Sub), typeof(int)),
+                MulExpr _ => (EmitSingle(OpCodes.Mul), typeof(int)),
+                DivExpr _ => (EmitSingle(OpCodes.Div), typeof(int)),
+                EqExpr _ => (EmitSingle(OpCodes.Ceq), typeof(bool)),
+                LessExpr _ => (EmitSingle(OpCodes.Clt), typeof(bool)),
+                MoreExpr _ => (EmitSingle(OpCodes.Cgt), typeof(bool)),
+                LessOrEqExpr _ => (EmitOr(OpCodes.Ceq, OpCodes.Clt, leftLoader, rightLoader), typeof(bool)),
+                MoreOrEqExpr _ => (EmitOr(OpCodes.Ceq, OpCodes.Cgt, leftLoader, rightLoader), typeof(bool))
             };
 
+            return LoadWithOperation(leftLoader, rightLoader, type, () => operation(ilGenerator));
         }
 
         protected TypedLoader MethodScopeLoader(VarExpr expr, ILGenerator ilGenerator,
@@ -131,7 +94,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             }
 
-            if (state.MainVariables.TryGetValue(expr.Name, out var mv)) 
+            if (state.MainVariables.TryGetValue(expr.Name, out var mv))
             {
                 return (mv.LocalType, () => ilGenerator.Emit(OpCodes.Ldloc, mv));
             }
@@ -153,18 +116,57 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             for (int i = 0; i < ctorParams.Length; i++)
             {
-                VarLoader(providedParams[i], ilGenerator, state).Load();
+                ValueLoader(providedParams[i], ilGenerator, state).Load();
             }
 
             return (type, () => ilGenerator.Emit(OpCodes.Newobj, ctor));
         }
 
-        protected TypedLoader FuncLoader
+        protected TypedLoader FuncCallLoader
             (FuncInvocationExpr expr, ILGenerator ilGenerator, CodeGenerationState state)
         {
             var generator = Factory.GeneratorFor<FuncInvocationExpr>();
 
             return (state.DefinedMethods[expr.Name].ReturnType, () => generator.Generate(expr, state));
         }
+
+        private TypedLoader LoadWithOperation(TypedLoader left, TypedLoader right, Type returnType, Action EmitOp)
+        {
+            return new TypedLoader(returnType, () =>
+            {
+                left.Load();
+                right.Load();
+
+                EmitOp();
+            }
+            );
+        }
+
+        private Action<ILGenerator> EmitSingle(OpCode opCode) => il => il.Emit(opCode);
+
+        private Action<ILGenerator> EmitOr(OpCode left, OpCode right,
+            TypedLoader leftLoader, TypedLoader rightLoader) => il =>
+        {
+            var leftLb = il.DeclareLocal(leftLoader.Type);
+            var rightLb = il.DeclareLocal(rightLoader.Type);
+
+            var firstRes = il.DeclareLocal(typeof(bool));
+
+            il.Emit(OpCodes.Stloc, rightLb);
+            il.Emit(OpCodes.Stloc, leftLb);
+
+            il.Emit(OpCodes.Ldloc, leftLb);
+            il.Emit(OpCodes.Ldloc, rightLb);
+
+            il.Emit(left);
+            il.Emit(OpCodes.Stloc, firstRes);
+
+            il.Emit(OpCodes.Ldloc, leftLb);
+            il.Emit(OpCodes.Ldloc, rightLb);
+            il.Emit(right);
+            il.Emit(OpCodes.Ldloc, firstRes);
+
+            il.Emit(OpCodes.Or);
+        };
     }
 }

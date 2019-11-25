@@ -41,8 +41,24 @@ namespace TinyLang.CLI
                     ";
 
             var addExample = @"
-a = 2 + 1 + 4
-printN(a)
+a = 2 == 2
+printB(a)
+";
+
+            var checkAgeExample = @"
+func checkAge(age: int)
+{
+    msg = ""Age is not 18""
+
+    if(age >= 18)
+    {
+        msg = ""Age >= 18!""
+    }
+
+    return msg
+}
+
+print(checkAge(23))
 ";
 
             //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
@@ -54,7 +70,7 @@ printN(a)
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
                 //.WithCodeSource(samplePath, SourceType.File)
-                .WithCodeSource(addExample, SourceType.String)
+                .WithCodeSource(checkAgeExample, SourceType.String)
                 .Run();
 
         }

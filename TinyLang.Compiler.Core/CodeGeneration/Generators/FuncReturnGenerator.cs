@@ -13,7 +13,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
         {
             if (expression.Expr is GeneralOperations.VarExpr v)
             {
-                VarLoader(v, state.MethodBuilder.GetILGenerator(), state).Load();
+                ValueLoader(v, state.MethodBuilder.GetILGenerator(), state).Load();
             }
             else
             {

@@ -65,7 +65,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             il.MarkLabel(labels.Current);
             if (predicate != null)
             {
-                var (type, emit) = VarLoader(predicate, il, state);
+                var (type, emit) = ValueLoader(predicate, il, state);
 
                 if (type != typeof(bool))
                     throw new Exception("Wrong predicate value");
@@ -86,7 +86,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
         {
             if (_isTernary)
             {
-                VarLoader(scope.Statements.FirstOrDefault(), il, state);
+                ValueLoader(scope.Statements.FirstOrDefault(), il, state);
             }
             else
             {

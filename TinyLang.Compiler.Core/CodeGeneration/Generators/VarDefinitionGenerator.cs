@@ -38,7 +38,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         private LocalBuilder DefineVar(Expr value, ILGenerator ilGenerator, CodeGenerationState state)
         {
-            (Type type, Action emitLoad) = VarLoader(value, ilGenerator, state);
+            (Type type, Action emitLoad) = ValueLoader(value, ilGenerator, state);
 
             LocalBuilder lb = ilGenerator.DeclareLocal(type);
             
@@ -50,7 +50,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         private void AssignVar(Expr value, ILGenerator ilGenerator, CodeGenerationState state, LocalBuilder lb)
         {
-            var (_, emitLoad) = VarLoader(value, ilGenerator, state);
+            var (_, emitLoad) = ValueLoader(value, ilGenerator, state);
 
             emitLoad();
             ilGenerator.Emit(OpCodes.Stloc, lb);
