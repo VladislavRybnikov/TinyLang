@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
-    public class PropExpr
+    public class PropExpr : Expr
     {
-        public string Var;
+        public Expr Expr;
         public string Prop;
 
-        public PropExpr(string @var, string prop) 
+        public PropExpr(Expr expr, string prop) 
         {
-            Var = var;
+            Expr = expr;
             Prop = prop;
         }
 
         public override string ToString() 
         {
-            return $"Var({Var}):Prop({Prop})";
+            return $"({Expr}):Prop({Prop})";
         }
     }
 }

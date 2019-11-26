@@ -52,7 +52,7 @@ namespace TinyLang.Compiler.Core
         {
             var code = sourceType == SourceType.String ? source : File.ReadAllText(source);
 
-            var parsed = TinyInteractive.Parser.Parse(code);
+            var parsed = _parser.Parse(code);
 
             var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
             foreach (var expr in parsed)

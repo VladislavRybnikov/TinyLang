@@ -11,6 +11,7 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using TinyLang.Compiler.Core.Parsing.Parsers;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
+using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core
 {
@@ -37,16 +38,19 @@ namespace TinyLang.Compiler.Core
 
         public static Parser<Expr> ExprValueParser { get; }
 
+        public static Parser<string> IdentifierParser { get; }
+
         public static Parser<string> StrValue(string value) => from str in asString(many1(letter)) where str == value select str;
 
         public static Parser<Expr> GetExprValueParser(Parser<Expr> exprParser)
         {
             return choice(
+                attempt(RecordParsers.PropGetter(exprParser)),
                 attempt(FuncParsers.FuncInvocation(exprParser)), 
                 attempt(RecordParsers.RecordCreation(exprParser)), 
                 attempt(BoolParser),
                 attempt(IntParser), 
-                attempt(StrParser), 
+                attempt(StrParser),
                 VarParser);
         }
 
@@ -70,11 +74,14 @@ namespace TinyLang.Compiler.Core
 
             StrParser = from str in TokenParser.StringLiteral select Str(str);
 
-            UntypedVarParser = from w in asString(from word in many1(letter)
-                                               from sp in spaces
-                                               select word)
-                            where !LanguageDef.ReservedOpNames.Contains(w)
-                            select new GeneralOperations.VarExpr(w) as Expr;
+            IdentifierParser = from w in asString(from word in many1(letter)
+                                                from sp in spaces
+                                                select word)
+                             where !LanguageDef.ReservedOpNames.Contains(w)
+                             select w;
+
+             UntypedVarParser = from i in IdentifierParser
+                                select new GeneralOperations.VarExpr(i) as Expr;
 
             TypeAssignParser = from c in TokenParser.Colon
                                    from s in TokenParser.Identifier

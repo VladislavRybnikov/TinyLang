@@ -38,6 +38,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromValue(Expr expr, ILGenerator ilGenerator, CodeGenerationState state, ICodeGeneratorsFactory factory) => expr switch
         {
             VarExpr v => FromMethodScope(v, ilGenerator, state),
+            PropExpr p => FromProperty(p, ilGenerator, state, factory),
             StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
             IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
             BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
@@ -75,6 +76,17 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             return LoadWithOperation(leftLoader, rightLoader, type, () => operation(ilGenerator));
         }
 
+        public static TypedLoader FromProperty(PropExpr prop, ILGenerator ilGenerator, CodeGenerationState state, ICodeGeneratorsFactory factory) 
+        {
+            var (varType, varLoader) = FromValue(prop.Expr, ilGenerator, state, factory);
+
+            varLoader();
+            var property = varType.GetProperty(prop.Prop);
+            var get = property.GetGetMethod();
+
+            return (property.PropertyType, () => ilGenerator.Emit(OpCodes.Call, get));
+        }
+
         public static TypedLoader FromRecordCreation(RecordCreationExpr expr, ILGenerator ilGenerator, CodeGenerationState state, ICodeGeneratorsFactory factory)
         {
             var type = state.ModuleBuilder.GetType(expr.Name);
@@ -98,7 +110,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         {
             var generator = factory.GeneratorFor<FuncInvocationExpr>();
 
-            return (state.DefinedMethods[expr.Name].ReturnType, () => generator.Generate(expr, state));
+            var returnType = state.DefinedMethods[expr.Name].ReturnType;
+            return (returnType, () => generator.Generate(expr, state));
         }
 
         public static TypedLoader FromMethodScope(VarExpr expr, ILGenerator ilGenerator,

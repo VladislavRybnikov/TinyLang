@@ -20,7 +20,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             return new TypedArg
             {
                 Name = var.Var.Name,
-                Type = TypesResolver.ResolveFromExpr(var, state.ModuleBuilder)
+                Type = TypesResolver.ResolveFromExpr(var, state)
             };
         }
 
