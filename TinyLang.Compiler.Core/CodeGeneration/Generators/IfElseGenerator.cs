@@ -5,16 +5,16 @@ using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 {
     public class IfElseGenerator : CodeGenerator<IfElseExpr>
     {
-        private readonly bool _isTernary;
+        private bool _isTernary = false;
 
-        public IfElseGenerator(ICodeGeneratorsFactory factory, bool isTernary = false) : base(factory)
+        public IfElseGenerator(ICodeGeneratorsFactory factory) : base(factory)
         {
-            _isTernary = isTernary;
         }
 
         protected internal override CodeGenerationState GenerateInternal(IfElseExpr expression, CodeGenerationState state)
@@ -26,7 +26,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             var ifLabel = il.DefineLabel();
             var elseLabel = il.DefineLabel();
             var endLabel = il.DefineLabel();
-
+            
             var labels = new []{ (expression.If.Predicate, expression.If.Scope, ifLabel) }
                 .Append(expression.Elifs.Select(x => (x.Predicate, x.Scope, Label: il.DefineLabel()))).ToList(); // elif's labels
 
@@ -37,7 +37,6 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
             labels.Add((null, null, endLabel));
             var labelsArr = labels.ToArray();
-            var actions = new List<Action<Label>>();
 
             LabelsInfo LabelsInfo(Label current, Label next)
                 => new LabelsInfo { Current = current, Next = next, Final = endLabel };
@@ -51,12 +50,25 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
                 GenerateConditionalBranch(p, s, state, il, info);
             }
 
-            actions.ForEach(x => x(endLabel));
-
             il.MarkLabel(endLabel);
             il.Emit(OpCodes.Nop);
 
             return state;
+        }
+
+        protected override IfElseExpr Typed(Expr expr) 
+        {
+            return expr switch
+            {
+                IfElseExpr ifElse => ifElse,
+                TernaryIfExpr ternaryIf => FromTernary(ternaryIf)
+            };
+        }
+
+        private IfElseExpr FromTernary(TernaryIfExpr ternaryIf) 
+        {
+            _isTernary = true;
+            return ternaryIf.ToIfElse();
         }
 
         private void GenerateConditionalBranch(Expr predicate, Scope scope, CodeGenerationState state, 
@@ -84,9 +96,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         private void StartScope(Scope scope, ILGenerator il, CodeGenerationState state, Label final)
         {
+            // TODO: refactor
             if (_isTernary)
             {
-                ValueLoader(scope.Statements.FirstOrDefault(), il, state);
+                ValueLoader(scope.Statements.FirstOrDefault(), il, state).Load();
             }
             else
             {

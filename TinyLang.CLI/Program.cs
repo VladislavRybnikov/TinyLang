@@ -10,51 +10,29 @@ namespace TinyLang.CLI
     {
         static void Main(string[] args)
         {
-            var funcExample = @"
-                    type User(name: str, userType: str, age: int)
-
-                    func createAdmin(name: str, age: int)
+            var shouldBeFixed = @"
+                    type User(name: str, age: int)
+                    type ValidatedUserResult(user: User, isValidated: bool)
+                    
+                    func valid(user: User)
                     {
-                        adminType = ""admin""
-                        
-                        if(true)
-                        {
-                            adminType = ""admin1""
-                        }
-                        elif(true)
-                        {
-                            adminType = ""admin2""
-                        }
-                        else
-                        {
-                            adminType = ""admin3""
-                        }
+                        return new ValidatedUserResult(user, true)
+                    }
 
-                        result = new User(name, adminType, age)
+                    func invalid(user: User)
+                    {
+                        return new ValidatedUserResult(user, false)
+                    }
 
-                        return result
+                    func validateAge(user: User)
+                    {
+                        return valid(user)
                     }
                     
-                    u = createAdmin(""Vlad"", 20)
+                    u = new User(""Vlad"", 20)
 
                     print(u)
                     ";
-
-            var printFExample = @"
-a = 123
-printF(""a = {0}"", 123)
-";
-
-            var propExample = @"
-type User(name: str, age: int)
-
-func createTestUser()
-{
-    return new User(""test"", 23)
-}
-
-print(createTestUser().name)
-";
 
             //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
 
@@ -65,7 +43,7 @@ print(createTestUser().name)
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
                 //.WithCodeSource(samplePath, SourceType.File)
-                .WithCodeSource(propExample, SourceType.String)
+                .WithCodeSource(shouldBeFixed, SourceType.String)
                 .Run();
 
         }

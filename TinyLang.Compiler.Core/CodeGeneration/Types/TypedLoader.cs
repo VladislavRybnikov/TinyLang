@@ -39,14 +39,36 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         {
             VarExpr v => FromMethodScope(v, ilGenerator, state),
             PropExpr p => FromProperty(p, ilGenerator, state, factory),
-            StrExpr str => (typeof(string), (Action)(() => ilGenerator.Emit(OpCodes.Ldstr, str.Value))),
-            IntExpr @int => (typeof(int), () => ilGenerator.Emit(OpCodes.Ldc_I4, @int.Value)),
-            BoolExpr @bool => (typeof(bool), () => ilGenerator.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
+            StrExpr str => (typeof(string), (Action)(() => ilGenerator?.Emit(OpCodes.Ldstr, str.Value))),
+            IntExpr @int => (typeof(int), () => ilGenerator?.Emit(OpCodes.Ldc_I4, @int.Value)),
+            BoolExpr @bool => (typeof(bool), () => ilGenerator?.Emit(@bool.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0)),
             RecordCreationExpr record => FromRecordCreation(record, ilGenerator, state, factory),
             FuncInvocationExpr f => FromFuncCall(f, ilGenerator, state, factory),
             BinaryExpr bin => FromBinaryExpr(bin, ilGenerator, state, factory),
+            TernaryIfExpr t => FromTernaryExpr(t, ilGenerator, state, factory),
             _ => throw new Exception("Unsupported variable type")
         };
+
+        public static TypedLoader FromTernaryExpr(TernaryIfExpr expr, ILGenerator ilGenerator,
+            CodeGenerationState state, ICodeGeneratorsFactory factory) 
+        {
+            if (!(expr.Then is ChooseExpr ch))
+            {
+                throw new Exception("Wrogn ternary operator structure");
+            }
+
+            var leftType = FromValue(ch.Left, null, state, factory).Type;
+            var rightType = FromValue(ch.Left, null, state, factory).Type;
+
+            if (leftType != rightType)
+            {
+                throw new Exception($"Can not resolve return type of ternary operator. Left type: {leftType}, right type: {rightType}");
+            }
+
+            var generator = factory.GeneratorFor<IfElseExpr>();
+
+            return (leftType, () => generator.Generate(expr, state));
+        }
 
         public static TypedLoader FromBinaryExpr(BinaryExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state, ICodeGeneratorsFactory factory)
@@ -121,12 +143,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             {
                 if (state.MethodArgs.TryGetValue(expr.Name, out var arg))
                 {
-                    return (arg.Type, () => arg.EmitLoad(ilGenerator));
+                    return (arg.Type, () => arg.EmitLoad?.Invoke(ilGenerator));
                 }
 
                 if (state.MethodVariables.TryGetValue(expr.Name, out var v))
                 {
-                    return (v.LocalType, () => ilGenerator.Emit(OpCodes.Ldloc, v));
+                    return (v.LocalType, () => ilGenerator?.Emit(OpCodes.Ldloc, v));
                 }
 
             }

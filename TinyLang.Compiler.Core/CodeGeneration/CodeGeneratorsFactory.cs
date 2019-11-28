@@ -40,7 +40,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                     { typeof(FuncExpr), new FuncDefinitionGenerator(_instance) },
                     { typeof(RetExpr), new FuncReturnGenerator(_instance) },
                     { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
-                    { typeof(IfElseExpr), new IfElseGenerator(_instance) }
+                    { typeof(IfElseExpr), new IfElseGenerator(_instance) },
+                    { typeof(TernaryIfExpr), new IfElseGenerator(_instance) }
                 };
 
                 return _instance;

@@ -15,12 +15,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
 
         public Action<ILGenerator> EmitLoad { get; set; }
 
-        public static TypedArg FromVar(TypedVar var, CodeGenerationState state)
+        public static TypedArg FromVar(TypedVar var, CodeGenerationState state, ICodeGeneratorsFactory factory)
         {
             return new TypedArg
             {
                 Name = var.Var.Name,
-                Type = TypesResolver.ResolveFromExpr(var, state)
+                Type = TypesResolver.ResolveFromExpr(var, state, factory)
             };
         }
 

@@ -90,9 +90,11 @@ namespace TinyLang.Compiler.Core
             Func<GeneralOperations.VarExpr, Option<TypeExpr>, Expr> defineVar = (v, t) =>
                 t.Match<Expr>(some => new TypedVar(v, some), () => v);
 
+
             VarParser = from v in UntypedVarParser
-                        from t in optional(TypeAssignParser)
-                        select defineVar(v as GeneralOperations.VarExpr, t);
+                            // from t in optional(TypeAssignParser)
+                            // select defineVar(v as GeneralOperations.VarExpr, t);
+                        select v;
 
             TypedVarParser = from v in UntypedVarParser
                              from t in TypeAssignParser

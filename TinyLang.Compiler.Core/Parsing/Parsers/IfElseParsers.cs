@@ -6,11 +6,24 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using static TinyLang.Compiler.Core.TinyLanguage;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
     public static class IfElseParsers
     {
+        public static Parser<Expr> Ternary(Parser<Expr> parser) 
+        {
+            var chooseParser = from ifOp in TokenParser.Colon
+                               from then in parser
+                               from elseOp in StrValue("?")
+                               from @else in parser
+                               select new ChooseExpr(then, @else);
+
+            return from predicate in parser
+                   from ch in chooseParser
+                   select new TernaryIfExpr(predicate, ch) as Expr;
+        }
         public static Parser<Expr> IfElse(Parser<Expr> parser)
         {
             var ifParser = IfParser(parser);

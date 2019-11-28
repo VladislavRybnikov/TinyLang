@@ -144,6 +144,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
             return variable;
         }
+
+        public MethodBuilder ResolveMethod(string name) => DefinedMethods[name];
     }
 
     public class InvalidCodeGenerationStateException : Exception { }
