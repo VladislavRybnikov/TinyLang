@@ -11,7 +11,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             var method = state.DefinedMethods[expression.Name];
             var args = expression.Args.ToArray();
 
-            var il = state.MainMethodBuilder.GetILGenerator();
+            var il = state.State == CodeGenerationStates.Method ? state.MethodBuilder.GetILGenerator() 
+                : state.MainMethodBuilder.GetILGenerator();
 
             var argsTypes = args.Select(a =>
             {

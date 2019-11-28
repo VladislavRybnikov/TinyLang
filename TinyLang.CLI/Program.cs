@@ -26,12 +26,12 @@ namespace TinyLang.CLI
 
                     func validateAge(user: User)
                     {
-                        return valid(user)
+                        return user.age > 18 ? valid(user) : invalid(user)
                     }
                     
                     u = new User(""Vlad"", 20)
 
-                    print(u)
+                    print(validateAge(u))
                     ";
 
             //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
@@ -45,7 +45,6 @@ namespace TinyLang.CLI
                 //.WithCodeSource(samplePath, SourceType.File)
                 .WithCodeSource(shouldBeFixed, SourceType.String)
                 .Run();
-
         }
 
     }
