@@ -11,7 +11,7 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using TinyLang.Compiler.Core.Parsing.Parsers;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
-using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using static TinyLang.Compiler.Core.Parsing.Parsers.FuncParsers;
 
 namespace TinyLang.Compiler.Core
 {
@@ -40,13 +40,17 @@ namespace TinyLang.Compiler.Core
 
         public static Parser<string> IdentifierParser { get; }
 
-        public static Parser<string> StrValue(string value) => from str in asString(many1(letter)) where str == value select str;
+        public static Parser<string> StrValue(string value) =>
+            from str in asString(many1(letter)) 
+            where str == value 
+            select str;
 
         public static Parser<Expr> GetExprValueParser(Parser<Expr> exprParser)
         {
             return choice(
                 attempt(RecordParsers.PropGetter(exprParser)),
-                attempt(FuncParsers.FuncInvocation(exprParser)), 
+                attempt(FuncInvocation(exprParser)), 
+                attempt(Lambda(exprParser)),
                 attempt(RecordParsers.RecordCreation(exprParser)), 
                 attempt(BoolParser),
                 attempt(IntParser), 
@@ -83,9 +87,12 @@ namespace TinyLang.Compiler.Core
              UntypedVarParser = from i in IdentifierParser
                                 select new GeneralOperations.VarExpr(i) as Expr;
 
+            var typeParser = from s in TokenParser.Identifier
+                             select new TypeExpr(s);
+
             TypeAssignParser = from c in TokenParser.Colon
-                                   from s in TokenParser.Identifier
-                                   select new TypeExpr(s);
+                                   from t in either(attempt(FuncType()), typeParser)
+                                   select t;
 
             Func<GeneralOperations.VarExpr, Option<TypeExpr>, Expr> defineVar = (v, t) =>
                 t.Match<Expr>(some => new TypedVar(v, some), () => v);

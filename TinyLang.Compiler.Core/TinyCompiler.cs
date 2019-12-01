@@ -57,7 +57,7 @@ namespace TinyLang.Compiler.Core
             var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
             foreach (var expr in parsed)
             {
-                CodeGeneratorsFactory.Instance.GeneratorFor(expr.GetType()).Generate(expr, state);
+                _codeGeneratorsFactory.GeneratorFor(expr.GetType()).Generate(expr, state);
             }
             state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
             state.ModuleBuilder.CreateGlobalFunctions();

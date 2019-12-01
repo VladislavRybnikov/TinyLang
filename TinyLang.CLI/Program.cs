@@ -10,19 +10,13 @@ namespace TinyLang.CLI
     {
         static void Main(string[] args)
         {
-            var shouldBeFixed = @"
+            var funcExample = @"
                     type User(name: str, age: int)
                     type ValidatedUserResult(user: User, isValidated: bool)
                     
-                    func valid(user: User)
-                    {
-                        return new ValidatedUserResult(user, true)
-                    }
+                    func valid(user: User) => new ValidatedUserResult(user, true)
 
-                    func invalid(user: User)
-                    {
-                        return new ValidatedUserResult(user, false)
-                    }
+                    func invalid(user: User) => new ValidatedUserResult(user, false)
 
                     func validateAge(user: User)
                     {
@@ -34,16 +28,21 @@ namespace TinyLang.CLI
                     print(validateAge(u))
                     ";
 
-            //var samplePath = @"C:\Users\Vladyslav_Rybnikov\source\repos\TinyLang\Examples\Sample01.tl";
+            var lambdaEx = @"
+                    add = (a: int, b: int) => a + b;
 
-            //TinyCLI.Run();
+                    func binaryOp(a: int, b: int, op: (int, int)->int) => op(a, b)
+
+                    res = binaryOp(2, 2, add)
+                    print(res)
+                    ";
+
             TinyCompiler.Create(
                 new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
                 new ExprTokenizer(),
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("test")
-                //.WithCodeSource(samplePath, SourceType.File)
-                .WithCodeSource(shouldBeFixed, SourceType.String)
+                .WithCodeSource(funcExample, SourceType.String)
                 .Run();
         }
 
