@@ -14,23 +14,23 @@ namespace TinyLang.Compiler.Core
             return Evaluate(tokenized);
         }
 
-        public static Expr Parse(string line)
+        public static AST Parse(string line)
         {
             var exprParserBuilder = new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp);
             var tokenizer = new ExprTokenizer();
 
-            var parser = new ExprParser(exprParserBuilder, tokenizer);
-            return parser.ParseLine(line);
+            var builder = new ASTBuilder(exprParserBuilder, tokenizer);
+            return builder.FromStr(line);
         }
 
-        public static ExprParser Parser
+        public static ASTBuilder ASTBuilder
         {
             get
             {
                 var exprParserBuilder = new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp);
                 var tokenizer = new ExprTokenizer();
 
-                var parser = new ExprParser(exprParserBuilder, tokenizer);
+                var parser = new ASTBuilder(exprParserBuilder, tokenizer);
                 return parser;
             }
         }

@@ -22,19 +22,21 @@ namespace TinyLang.Compiler.Core
         ICompiler WithAssemblyName(string name);
 
         void Run();
+
+        void Run(out AST ast);
     }
 
     public class TinyCompiler : ICompiler
     {
-        private readonly IExprParser _parser;
+        private readonly IASTBuilder _astBuilder;
         private readonly ICodeGeneratorsFactory _codeGeneratorsFactory;
 
         private string assemblyName, source;
 
         private SourceType sourceType;
 
-        private TinyCompiler(IExprParser parser, ICodeGeneratorsFactory codeGeneratorsFactory) {
-            _parser = parser;
+        private TinyCompiler(IASTBuilder astBuilder, ICodeGeneratorsFactory codeGeneratorsFactory) {
+            _astBuilder = astBuilder;
             _codeGeneratorsFactory = codeGeneratorsFactory;
         }
 
@@ -45,24 +47,21 @@ namespace TinyLang.Compiler.Core
             ICodeGeneratorsFactory codeGeneratorsFactory
         )
         {
-            return new TinyCompiler(new ExprParser(parserBuilder, tokenizer), codeGeneratorsFactory);
+            return new TinyCompiler(new ASTBuilder(parserBuilder, tokenizer), codeGeneratorsFactory);
         }
 
         public void Run()
         {
+            Run(out _);
+        }
+
+        public void Run(out AST ast)
+        {
             var code = sourceType == SourceType.String ? source : File.ReadAllText(source);
 
-            var parsed = _parser.Parse(code);
+            ast = _astBuilder.FromStr(code);
 
-            var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
-            foreach (var expr in parsed)
-            {
-                _codeGeneratorsFactory.GeneratorFor(expr.GetType()).Generate(expr, state);
-            }
-            state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
-            state.ModuleBuilder.CreateGlobalFunctions();
-
-            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
+            Run(ast);
         }
 
         public ICompiler WithAssemblyName(string name)
@@ -76,6 +75,21 @@ namespace TinyLang.Compiler.Core
             this.source = source;
             this.sourceType = sourceType;
             return this;
+        }
+
+        private void Run(AST ast) 
+        {
+            var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
+
+            foreach (var expr in ast)
+            {
+                _codeGeneratorsFactory.GeneratorFor(expr.GetType()).Generate(expr, state);
+            }
+
+            state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
+            state.ModuleBuilder.CreateGlobalFunctions();
+
+            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
         }
     }
 }

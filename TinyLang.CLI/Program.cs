@@ -1,4 +1,5 @@
-﻿using TinyLang.Compiler.Core;
+﻿using System;
+using TinyLang.Compiler.Core;
 using TinyLang.Compiler.Core.CodeGeneration;
 using TinyLang.Compiler.Core.Parsing;
 using TinyLang.Compiler.Core.Parsing.Expressions;
@@ -8,6 +9,11 @@ namespace TinyLang.CLI
 {
     class Program
     {
+        static ICompiler Compiler = TinyCompiler.Create(
+                new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
+                new ExprTokenizer(),
+                CodeGeneratorsFactory.Instance);
+
         static void Main(string[] args)
         {
             var funcExample = @"
@@ -18,16 +24,15 @@ namespace TinyLang.CLI
 
                     func invalid(user: User) => new ValidatedUserResult(user, false)
 
-                    func validateAge(user: User)
-                    {
-                        return user.age > 18 ? valid(user) : invalid(user)
-                    }
-                    
+                    func validateAge(user: User) => user.age > 18 ? valid(user) : invalid(user)
+
                     u = new User(""Vlad"", 20)
 
                     print(validateAge(u))
                     ";
 
+            // TODO
+            // 1) lambda functions
             var lambdaEx = @"
                     add = (a: int, b: int) => a + b;
 
@@ -37,13 +42,30 @@ namespace TinyLang.CLI
                     print(res)
                     ";
 
-            TinyCompiler.Create(
-                new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
-                new ExprTokenizer(),
-                CodeGeneratorsFactory.Instance)
+            // 2) type members
+
+            // 3) ADT + Generics
+            var adtExample = @"
+                    type A = int * int
+                    type B = int | int  
+
+                    type IntAlias = int
+
+                    type Option<T> = 
+                        Some: T
+                        | None
+
+                    none = Option.None
+
+                    some = Option.Some(5)
+                    ";
+
+            Compiler
                 .WithAssemblyName("test")
                 .WithCodeSource(funcExample, SourceType.String)
-                .Run();
+                .Run(out var ast);
+
+            Console.WriteLine(ast);
         }
 
     }

@@ -20,4 +20,17 @@ type List(elements: params<int>) // ? params
 
 list(1, 2, 3).map((x: int) => x + 1)
 
+// type members
+
+type User(name: str, type: str)
+{
+	this FullName = name + " " + type
+
+	this func GetName() => name 
+	
+	static func Admin(name: str) => new User(name, "admin")
+	
+	static Empty = new User("", "")
+}
+
 
