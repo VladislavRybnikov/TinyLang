@@ -33,6 +33,12 @@ namespace TinyLang.CLI
 
             // TODO
             // 1) lambda functions
+            var lambdaSimple = @"
+                    incr = (x: int) => x
+
+                    print(incr)
+                    ";
+
             var lambdaEx = @"
                     add = (a: int, b: int) => a + b;
 
@@ -62,7 +68,7 @@ namespace TinyLang.CLI
 
             Compiler
                 .WithAssemblyName("test")
-                .WithCodeSource(funcExample, SourceType.String)
+                .WithCodeSource(lambdaSimple, SourceType.String)
                 .Run(out var ast);
 
             Console.WriteLine(ast);

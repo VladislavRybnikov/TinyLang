@@ -61,7 +61,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             return expr switch
             {
                 IfElseExpr ifElse => ifElse,
-                TernaryIfExpr ternaryIf => FromTernary(ternaryIf)
+                TernaryIfExpr ternaryIf => FromTernary(ternaryIf),
+                _ => null
             };
         }
 

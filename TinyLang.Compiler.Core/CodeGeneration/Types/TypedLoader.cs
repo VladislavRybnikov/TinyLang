@@ -46,15 +46,32 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             FuncInvocationExpr f => FromFuncCall(f, ilGenerator, state, factory),
             BinaryExpr bin => FromBinaryExpr(bin, ilGenerator, state, factory),
             TernaryIfExpr t => FromTernaryExpr(t, ilGenerator, state, factory),
+            LambdaExpr l => FromLambda(l, ilGenerator, state, factory),
             _ => throw new Exception("Unsupported variable type")
         };
+
+        public static TypedLoader FromLambda(LambdaExpr lambda, ILGenerator ilGenerator,
+            CodeGenerationState state, ICodeGeneratorsFactory factory)
+        {
+            factory.GeneratorFor<LambdaExpr>().Generate(lambda, state);
+            var method = state.AnonymousMethodsCache.Peek();
+
+            var type = method.DeclaringType;
+
+            return (type,
+                () =>
+                {
+                    ilGenerator.Emit(OpCodes.Ldftn, method);
+                }
+            );
+        }
 
         public static TypedLoader FromTernaryExpr(TernaryIfExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state, ICodeGeneratorsFactory factory) 
         {
             if (!(expr.Then is ChooseExpr ch))
             {
-                throw new Exception("Wrogn ternary operator structure");
+                throw new Exception("Wrong ternary operator structure");
             }
 
             var leftType = FromValue(ch.Left, null, state, factory).Type;

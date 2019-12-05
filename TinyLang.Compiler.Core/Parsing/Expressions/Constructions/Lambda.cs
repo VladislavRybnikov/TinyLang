@@ -17,9 +17,16 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
             Expr = expr;
         }
 
+        public FuncExpr ToFunc()
+        {
+            var scope = new Scope(new RetExpr(Expr));
+
+            return new FuncExpr(null, Args, scope);
+        }
+
         public override string ToString()
         {
-            return $"Lamda({string.Join(", ", Args)}) => {Expr}";
+            return $"Lambda({string.Join(", ", Args)}) => {Expr}";
         }
     }
 }

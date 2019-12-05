@@ -18,6 +18,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
     public class CodeGenerationState
     {
+        public AnonymousMethodsCache AnonymousMethodsCache { get; } = new AnonymousMethodsCache();
         public Dictionary<string, LocalBuilder> MainVariables { get; } = new Dictionary<string, LocalBuilder>();
 
         public Dictionary<string, LocalBuilder> MethodVariables { get; private set; }
@@ -101,11 +102,11 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             return this;
         }
 
-        public CodeGenerationState WithGlobalMethod(string name, Type[] parameterTypes)
+        public CodeGenerationState WithGlobalMethod(string name, Type[] parameterTypes, MethodAttributes attr)
         {
             if (ModuleBuilder == null) throw new InvalidCodeGenerationStateException();
 
-            MethodBuilder = ModuleBuilder.DefineGlobalMethod(name, MethodAttributes.Final | MethodAttributes.Public | MethodAttributes.Static, null, parameterTypes);
+            MethodBuilder = ModuleBuilder.DefineGlobalMethod(name, attr, null, parameterTypes);
             State = CodeGenerationStates.Method;
             DefinedMethods.Add(name, MethodBuilder);
             MethodArgs = new Dictionary<string, TypedArg>();

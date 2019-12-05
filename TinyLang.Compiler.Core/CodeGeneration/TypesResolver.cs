@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.CodeGeneration.Types;
@@ -23,11 +24,18 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         public static Type Resolve(string name, ModuleBuilder module)
             => _types.TryGetValue(name, out var val) ? val : module.GetType(name);
 
+        public static Type Resolve(TypeExpr expr, ModuleBuilder module) =>
+            expr switch
+            {
+                FuncTypeExpr f => ResolveFuncType(f, module),
+                _  => Resolve(expr.TypeName, module)
+            };
+
         public static Type ResolveFromExpr(Expr expr, CodeGenerationState state, ICodeGeneratorsFactory factory) =>
             expr switch
             {
                 VarExpr v => state.ResolveVariable(v.Name).LocalType,
-                TypedVar t => Resolve(t.Type.TypeName, state.ModuleBuilder),
+                TypedVar t => Resolve(t.Type, state.ModuleBuilder),
                 StrExpr _ => typeof(string),
                 IntExpr _ => typeof(int),
                 BoolExpr _ => typeof(bool),
@@ -36,5 +44,13 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 FuncInvocationExpr f => state.ResolveMethod(f.Name).ReturnType,
                 Expr e => TypedLoader.FromValue(e, null, state, factory).Type
             };
+
+        private static Type ResolveFuncType(FuncTypeExpr f, ModuleBuilder module)
+        {
+            var argsTypes = f.ArgsTypes.Select(x => Resolve(x, module))
+                .Append(Resolve(f.ReturnType, module)).ToArray();
+
+            return typeof(Func<>).MakeGenericType(argsTypes);
+        }
     }
 }
