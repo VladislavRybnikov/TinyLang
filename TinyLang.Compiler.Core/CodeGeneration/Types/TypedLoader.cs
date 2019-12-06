@@ -53,15 +53,38 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromLambda(LambdaExpr lambda, ILGenerator ilGenerator,
             CodeGenerationState state, ICodeGeneratorsFactory factory)
         {
+            var funcTypes = new[]
+            {
+                typeof(Func<>),
+                typeof(Func<,>),
+                typeof(Func<,,>),
+                typeof(Func<,,,>),
+                typeof(Func<,,,,>),
+                typeof(Func<,,,,,>),
+                typeof(Func<,,,,,,>),
+                typeof(Func<,,,,,,,>),
+                typeof(Func<,,,,,,,,>),
+                typeof(Func<,,,,,,,,,>),
+                typeof(Func<,,,,,,,,,,>),
+                typeof(Func<,,,,,,,,,,,,>)
+            };
+
             factory.GeneratorFor<LambdaExpr>().Generate(lambda, state);
             var method = state.AnonymousMethodsCache.Peek();
 
-            var type = method.DeclaringType;
+            var argsTypes = lambda.Args.Select(x => TypesResolver.Resolve(x.Type, state.ModuleBuilder)).Append(method.ReturnType).ToArray();
+
+            var type = funcTypes[argsTypes.Length - 1].MakeGenericType(argsTypes);
+
+            var constructorInfo =
+                type.GetConstructor(new [] { typeof(object), typeof(IntPtr) });
 
             return (type,
                 () =>
                 {
+                    ilGenerator.Emit(OpCodes.Ldnull);
                     ilGenerator.Emit(OpCodes.Ldftn, method);
+                    ilGenerator.Emit(OpCodes.Newobj, constructorInfo);
                 }
             );
         }
@@ -149,7 +172,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         {
             var generator = factory.GeneratorFor<FuncInvocationExpr>();
 
-            var returnType = state.DefinedMethods[expr.Name].ReturnType;
+            var fromM = state.DefinedMethods.TryGetValue(expr.Name, out var m);
+            var fromV = state.TryResolveVariable(expr.Name, out var lb);
+
+            var returnType = fromM ? m.ReturnType : fromV ? lb.LocalType?.GetMethod("Invoke")?.ReturnType : throw new Exception("!");
             return (returnType, () => generator.Generate(expr, state));
         }
 

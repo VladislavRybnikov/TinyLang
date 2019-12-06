@@ -34,7 +34,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         public static Type ResolveFromExpr(Expr expr, CodeGenerationState state, ICodeGeneratorsFactory factory) =>
             expr switch
             {
-                VarExpr v => state.ResolveVariable(v.Name).LocalType,
+                VarExpr v => state.ResolveVariableType(v.Name),
                 TypedVar t => Resolve(t.Type, state.ModuleBuilder),
                 StrExpr _ => typeof(string),
                 IntExpr _ => typeof(int),
@@ -42,8 +42,17 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 AssignExpr a => ResolveFromExpr(a.Value, state, factory),
                 RecordCreationExpr r => Resolve(r.Name, state.ModuleBuilder),
                 FuncInvocationExpr f => state.ResolveMethod(f.Name).ReturnType,
+                LambdaExpr l => ResolveLambda(l, state, factory),
                 Expr e => TypedLoader.FromValue(e, null, state, factory).Type
             };
+
+        private static Type ResolveLambda(LambdaExpr l, CodeGenerationState state, ICodeGeneratorsFactory factory)
+        {
+            var argsTypes = l.Args.Select(x => Resolve(x.Type, state.ModuleBuilder))
+                .Append(ResolveFromExpr(l.Expr, state, factory)).ToArray();
+
+            return typeof(Func<>).MakeGenericType(argsTypes);
+        }
 
         private static Type ResolveFuncType(FuncTypeExpr f, ModuleBuilder module)
         {

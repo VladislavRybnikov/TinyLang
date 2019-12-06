@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TinyLang.Compiler.Core.CodeGeneration.Generators;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration
@@ -21,8 +22,17 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         private CodeGeneratorsFactory() { }
 
-        public ICodeGenerator GeneratorFor(Type type) => _genartors[type];
-        public ICodeGenerator GeneratorFor<T>() where T : Expr => _genartors[typeof(T)];
+        public ICodeGenerator GeneratorFor(Type type)
+        {
+            if (_genartors.TryGetValue(type, out var val))
+            {
+                return val;
+            }
+
+            return type != typeof(object) ? GeneratorFor(type.BaseType) : throw new Exception("Can not resolve Generator");
+        }
+
+        public ICodeGenerator GeneratorFor<T>() where T : Expr => GeneratorFor(typeof(T));
 
         public static ICodeGeneratorsFactory Instance
         {
@@ -32,6 +42,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                     return _instance;
 
                 _instance = new CodeGeneratorsFactory();
+
                 _instance._genartors = new Dictionary<Type, ICodeGenerator>
                 {
                     { typeof(AssignExpr), new VarDefinitionGenerator(_instance) },
@@ -42,7 +53,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                     { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
                     { typeof(IfElseExpr), new IfElseGenerator(_instance) },
                     { typeof(TernaryIfExpr), new IfElseGenerator(_instance) },
-                    { typeof(LambdaExpr), new FuncDefinitionGenerator(_instance) }
+                    { typeof(LambdaExpr), new FuncDefinitionGenerator(_instance) },
+                    { typeof(Expr), new SingleExprGenerator(_instance) }
                 };
 
                 return _instance;

@@ -129,22 +129,39 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             return this;
         }
 
-        public LocalBuilder ResolveVariable(string name) 
+        public Type ResolveVariableType(string name) 
         {
-            LocalBuilder variable = null;
+            LocalBuilder variable;
+            Type t = null;
 
-            if (State == CodeGenerationStates.Method) 
+            if (State == CodeGenerationStates.Method)
             {
-                MethodVariables.TryGetValue(name, out variable);
+                if (MethodVariables.TryGetValue(name, out variable))
+                {
+                    t = variable.LocalType;
+                }
+                else
+                {
+                    if(MethodArgs.TryGetValue(name, out var arg))
+                    {
+                        t = arg.Type;
+                    }
+                }
             }
 
-            if (variable == null) 
+            if (t != null) return t;
+
+            if (MainVariables.TryGetValue(name, out variable))
             {
-                MainVariables.TryGetValue(name, out variable);
+                t = variable.LocalType;
             }
 
-            return variable;
+            return t;
         }
+
+        public bool TryResolveVariable(string name, out LocalBuilder lb) => State == CodeGenerationStates.Method 
+            ? MethodVariables.TryGetValue(name, out lb) 
+            : MainVariables.TryGetValue(name, out lb);
 
         public MethodBuilder ResolveMethod(string name) => DefinedMethods[name];
     }

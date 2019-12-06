@@ -31,12 +31,12 @@ namespace TinyLang.CLI
                     print(validateAge(u))
                     ";
 
-            // TODO
             // 1) lambda functions
             var lambdaSimple = @"
-                    incr = (x: int) => x
-
-                    print(incr)
+                    unit = (x: int) => x
+                    add = (x: int, y: int) => x + y
+                   
+                    print(add(2, 2))
                     ";
 
             var lambdaEx = @"
