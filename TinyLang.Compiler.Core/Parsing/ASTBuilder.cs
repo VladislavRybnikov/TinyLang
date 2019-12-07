@@ -25,7 +25,9 @@ namespace TinyLang.Compiler.Core.Parsing
 
         public AST FromStr(string str)
         {
-            var parser = from s in spaces from x in many1(_parser) select x.AsEnumerable();
+            var parser = from s in spaces from x in many1(_parser) 
+                         from p in getPos select x.AsEnumerable()
+                            .Select(x => x.WithPosition(p.Line, p.Column));
             return new AST(ParseWithExceptionThrow(parser, str));
         }
 

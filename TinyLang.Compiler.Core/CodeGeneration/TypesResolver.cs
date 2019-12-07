@@ -28,7 +28,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             expr switch
             {
                 FuncTypeExpr f => ResolveFuncType(f, module),
-                _  => Resolve(expr.TypeName, module)
+                _  => Resolve(expr.Name, module)
             };
 
         public static Type ResolveFromExpr(Expr expr, CodeGenerationState state, ICodeGeneratorsFactory factory) =>

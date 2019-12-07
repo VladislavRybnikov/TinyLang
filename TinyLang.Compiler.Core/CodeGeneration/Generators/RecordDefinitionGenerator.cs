@@ -100,12 +100,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
         private PropInfo DefineProperty
             (TypedVar prop, TypeBuilder tb, CodeGenerationState state) 
         {
-            var p_Type = TypesResolver.Resolve(prop.Type.TypeName, state.ModuleBuilder);
+            var p_Type = TypesResolver.Resolve(prop.Type.Name, state.ModuleBuilder);
 
             var fb = tb.DefineField($"f_{prop.Var.Name}", p_Type, FieldAttributes.Private);
 
             var pb = tb.DefineProperty(prop.Var.Name, PropertyAttributes.HasDefault,
-                TypesResolver.Resolve(prop.Type.TypeName, state.ModuleBuilder), null);
+                TypesResolver.Resolve(prop.Type.Name, state.ModuleBuilder), null);
 
             var pGet = tb.DefineMethod($"get_{prop.Var.Name}",
                 MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,

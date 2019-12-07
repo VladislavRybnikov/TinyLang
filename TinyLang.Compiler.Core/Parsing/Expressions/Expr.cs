@@ -3,11 +3,38 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.BoolOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperations;
+using Newtonsoft.Json;
+using LanguageExt.Parsec;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions
 {
+    public class Position
+    {
+        public int Line { get; set; }
+        public int Column { get; set; }
+
+        public Position(int line, int column)
+        {
+            Line = line;
+            Column = column;
+        }
+    }
+
     public abstract class Expr
     {
+        [JsonProperty(Order = -2)]
+        public string NodeType => GetType().Name.Replace(nameof(Expr), string.Empty);
+
+        public Position Pos { get; set; }
+
+        public Expr WithPosition(int line, int column) 
+        {
+            Pos = new Position(line, column);
+            return this;
+        }
+
+        public Expr WithPosition(Pos p) => WithPosition(p.Line, p.Column);
+
         public static Expr Bool(bool value) => new BoolExpr(value);
         public static Expr Int(int value) => new IntExpr(value);
         public static Expr Str(string value) => new StrExpr(value);

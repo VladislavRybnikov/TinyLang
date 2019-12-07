@@ -25,7 +25,8 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
         {
             return from args in Args()
                    from ret in FuncRetExpr(parser)
-                   select new LambdaExpr(args, ret) as Expr;
+                   from p in getPos
+                   select new LambdaExpr(args, ret).WithPosition(p.Line, p.Column);
         }
 
         public static Parser<Expr> FuncDefinition(Parser<Expr> parser)

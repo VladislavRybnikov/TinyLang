@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="3.3.29" />
     <PackageReference Include="LanguageExt.Parsec" Version="3.3.29" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" />
   </ItemGroup>

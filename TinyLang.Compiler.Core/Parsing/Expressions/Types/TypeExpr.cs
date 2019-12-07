@@ -5,18 +5,18 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
 {
-    public class TypeExpr
+    public class TypeExpr : Expr
     {
-        public string TypeName { get; }
+        public string Name { get; }
 
         public TypeExpr(string typeName)
         {
-            TypeName = typeName;
+            Name = typeName;
         }
 
         public override string ToString()
         {
-            return $"Type({TypeName})";
+            return $"Type({Name})";
         }
     }
 

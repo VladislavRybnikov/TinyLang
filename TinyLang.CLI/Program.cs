@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TinyLang.Compiler.Core;
 using TinyLang.Compiler.Core.CodeGeneration;
 using TinyLang.Compiler.Core.Parsing;
@@ -68,9 +69,11 @@ namespace TinyLang.CLI
 
             Compiler
                 .WithAssemblyName("test")
-                .WithCodeSource(lambdaSimple, SourceType.String)
+                .WithCodeSource(funcExample, SourceType.String)
                 .Run(out var ast);
 
+            Console.WriteLine(string.Concat(Enumerable.Repeat("-", 20)));
+            Console.WriteLine("AST");
             Console.WriteLine(ast);
         }
 

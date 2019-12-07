@@ -18,8 +18,8 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
         }
 
         private static string TypeName(IEnumerable<TypeExpr> argsTypes, TypeExpr returnType) 
-            => $"Type(({string.Join(", ", argsTypes.Select(a => a.TypeName))})->" +
-                $"{returnType.TypeName})";
+            => $"Type(({string.Join(", ", argsTypes.Select(a => a.Name))})->" +
+                $"{returnType.Name})";
 
         public override string ToString()
         {

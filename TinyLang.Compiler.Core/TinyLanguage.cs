@@ -47,15 +47,19 @@ namespace TinyLang.Compiler.Core
 
         public static Parser<Expr> GetExprValueParser(Parser<Expr> exprParser)
         {
-            return choice(
+            var parser = choice(
                 attempt(RecordParsers.PropGetter(exprParser)),
-                attempt(FuncInvocation(exprParser)), 
+                attempt(FuncInvocation(exprParser)),
                 attempt(Lambda(exprParser)),
-                attempt(RecordParsers.RecordCreation(exprParser)), 
+                attempt(RecordParsers.RecordCreation(exprParser)),
                 attempt(BoolParser),
-                attempt(IntParser), 
+                attempt(IntParser),
                 attempt(StrParser),
                 VarParser);
+
+            return from e in parser
+                   from p in getPos
+                   select e.WithPosition(p.Line, p.Column);
         }
 
         public static Parser<Expr> Scope(Parser<Expr> parser) =>
@@ -101,11 +105,13 @@ namespace TinyLang.Compiler.Core
             VarParser = from v in UntypedVarParser
                             // from t in optional(TypeAssignParser)
                             // select defineVar(v as GeneralOperations.VarExpr, t);
-                        select v;
+                        from p in getPos
+                        select v.WithPosition(p);
 
             TypedVarParser = from v in UntypedVarParser
                              from t in TypeAssignParser
-                             select defineVar(v as GeneralOperations.VarExpr, t);
+                             from p in getPos
+                             select defineVar(v as GeneralOperations.VarExpr, t).WithPosition(p);
 
             ExprValueParser = choice(attempt(BoolParser),
                 attempt(IntParser), attempt(StrParser), VarParser);

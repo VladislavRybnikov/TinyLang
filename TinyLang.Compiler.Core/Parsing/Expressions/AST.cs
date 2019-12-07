@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions
 {
@@ -22,11 +22,13 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
         public override string ToString()
         {
-            return "AST {" +
-                $"\n\tLength: {Length} " +
-                $"\n\tHead: {Head}" +
-                $"\n\tTail: {Tail}" +
-                "\n}";
+            return JsonConvert.SerializeObject(this, settings: new JsonSerializerSettings 
+            {
+                Formatting = Formatting.Indented,
+                StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            });
         }
 
         public IEnumerator<Expr> GetEnumerator() => Expressions.AsEnumerable().GetEnumerator();

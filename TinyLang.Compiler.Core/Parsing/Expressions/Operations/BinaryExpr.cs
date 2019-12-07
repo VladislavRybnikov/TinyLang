@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
     public abstract class BinaryExpr : Expr
     {
+        [JsonProperty(Order = -1)]
+        public abstract string Op { get; }
+
         public Expr Right { get; }
         public Expr Left { get; }
 
