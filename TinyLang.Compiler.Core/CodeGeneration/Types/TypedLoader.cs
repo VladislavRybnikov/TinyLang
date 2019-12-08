@@ -11,6 +11,7 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperat
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.BoolOperations;
+using TinyLang.Compiler.Core.CodeGeneration.Utils;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Types
 {
@@ -53,28 +54,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromLambda(LambdaExpr lambda, ILGenerator ilGenerator,
             CodeGenerationState state, ICodeGeneratorsFactory factory)
         {
-            var funcTypes = new[]
-            {
-                typeof(Func<>),
-                typeof(Func<,>),
-                typeof(Func<,,>),
-                typeof(Func<,,,>),
-                typeof(Func<,,,,>),
-                typeof(Func<,,,,,>),
-                typeof(Func<,,,,,,>),
-                typeof(Func<,,,,,,,>),
-                typeof(Func<,,,,,,,,>),
-                typeof(Func<,,,,,,,,,>),
-                typeof(Func<,,,,,,,,,,>),
-                typeof(Func<,,,,,,,,,,,,>)
-            };
-
             factory.GeneratorFor<LambdaExpr>().Generate(lambda, state);
             var method = state.AnonymousMethodsCache.Peek();
 
-            var argsTypes = lambda.Args.Select(x => TypesResolver.Resolve(x.Type, state.ModuleBuilder)).Append(method.ReturnType).ToArray();
+            var argsTypes = lambda.Args.Select(x => TypesResolver.Resolve(x.Type, state.ModuleBuilder)).ToArray();
 
-            var type = funcTypes[argsTypes.Length - 1].MakeGenericType(argsTypes);
+            var type = FuncTypeResolver.Resolve(method.ReturnType, argsTypes);
 
             var constructorInfo =
                 type.GetConstructor(new [] { typeof(object), typeof(IntPtr) });

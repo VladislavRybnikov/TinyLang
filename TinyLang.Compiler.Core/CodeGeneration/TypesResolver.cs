@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.CodeGeneration.Types;
+using TinyLang.Compiler.Core.CodeGeneration.Utils;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
@@ -41,10 +42,24 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 BoolExpr _ => typeof(bool),
                 AssignExpr a => ResolveFromExpr(a.Value, state, factory),
                 RecordCreationExpr r => Resolve(r.Name, state.ModuleBuilder),
-                FuncInvocationExpr f => state.ResolveMethod(f.Name).ReturnType,
+                FuncInvocationExpr f => ResolveFuncCall(f, state),
                 LambdaExpr l => ResolveLambda(l, state, factory),
                 Expr e => TypedLoader.FromValue(e, null, state, factory).Type
             };
+
+        private static Type ResolveFuncCall(FuncInvocationExpr f, CodeGenerationState state) 
+        {
+            if(!state.DefinedMethods.TryGetValue(f.Name, out var m))
+            {
+                if (state.TryResolveVariable(f.Name, out var lb))
+                {
+                    var method = lb.LocalType?.GetMethod("Invoke");
+                    return method.ReturnType;
+                }       
+            }
+
+            return m.ReturnType;
+        }
 
         private static Type ResolveLambda(LambdaExpr l, CodeGenerationState state, ICodeGeneratorsFactory factory)
         {
@@ -56,10 +71,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         private static Type ResolveFuncType(FuncTypeExpr f, ModuleBuilder module)
         {
-            var argsTypes = f.ArgsTypes.Select(x => Resolve(x, module))
-                .Append(Resolve(f.ReturnType, module)).ToArray();
+            var argsTypes = f.ArgsTypes.Select(x => Resolve(x, module)).ToArray();
+            var returnType = Resolve(f.ReturnType, module);
 
-            return typeof(Func<>).MakeGenericType(argsTypes);
+            return FuncTypeResolver.Resolve(returnType, argsTypes);
         }
     }
 }

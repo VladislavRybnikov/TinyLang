@@ -41,12 +41,15 @@ namespace TinyLang.CLI
                     ";
 
             var lambdaEx = @"
-                    add = (a: int, b: int) => a + b;
+                    add = (a: int, b: int) => a + b
+                    mul = (a: int, b: int) => a * b
 
                     func binaryOp(a: int, b: int, op: (int, int)->int) => op(a, b)
 
-                    res = binaryOp(2, 2, add)
-                    print(res)
+                    addRes = binaryOp(3, 2, add)
+                    mulRes = binaryOp(3, 2, mul)
+                    printF(""3 + 2 = {0}"", addRes)
+                    printF(""3 * 2 = {0}"", mulRes)
                     ";
 
             // 2) type members
@@ -67,23 +70,9 @@ namespace TinyLang.CLI
                     some = Option.Some(5)
                     ";
 
-            var exceptionEx = @"
-                    func ifF(t: int) 
-                    {
-                        if(t)
-                        {
-                            print(""ok"")
-                        }
-                        
-                        return t
-                    }
-                    
-                    print(ifF(123))
-                    ";
-
             Compiler
                 .WithAssemblyName("test")
-                .WithCodeSource(exceptionEx, SourceType.String)
+                .WithCodeSource(lambdaEx, SourceType.String)
                 .Run(out var ast);
 
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 20)));

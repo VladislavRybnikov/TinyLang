@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LanguageExt;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -160,8 +161,29 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         }
 
         public bool TryResolveVariable(string name, out LocalBuilder lb) => Scope == CodeGenerationScope.Method 
-            ? MethodVariables.TryGetValue(name, out lb) 
+            ? TryResoveMethodVaribale(name, out lb)
             : MainVariables.TryGetValue(name, out lb);
+
+        public bool TryResoveMethodVaribale(string name, out LocalBuilder lb) 
+        {
+            if(!MethodVariables.TryGetValue(name, out lb))
+            {
+                var fromArg = MethodArgs.TryGetValue(name, out var arg);
+                if (fromArg)
+                {
+                    var il = MethodBuilder.GetILGenerator();
+                    var l = il.DeclareLocal(arg.Type);
+                    arg.EmitLoad(il);
+                    il.Emit(OpCodes.Stloc, l);
+
+                    lb = l;
+                }
+
+                return fromArg;
+            }
+
+            return true;
+        }
 
         public MethodBuilder ResolveMethod(string name) => DefinedMethods[name];
     }
