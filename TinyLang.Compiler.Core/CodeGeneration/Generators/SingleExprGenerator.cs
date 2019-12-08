@@ -14,7 +14,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         protected internal override CodeGenerationState GenerateInternal(Expr expression, CodeGenerationState state)
         {
-            TypedLoader.FromValue(expression, state.State == CodeGenerationStates.Method
+            TypedLoader.FromValue(expression, state.Scope == CodeGenerationScope.Method
                     ? state.MethodBuilder.GetILGenerator()
                     : state.MainMethodBuilder.GetILGenerator(),
                 state,

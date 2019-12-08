@@ -67,9 +67,23 @@ namespace TinyLang.CLI
                     some = Option.Some(5)
                     ";
 
+            var exceptionEx = @"
+                    func ifF(t: int) 
+                    {
+                        if(t)
+                        {
+                            print(""ok"")
+                        }
+                        
+                        return t
+                    }
+                    
+                    print(ifF(123))
+                    ";
+
             Compiler
                 .WithAssemblyName("test")
-                .WithCodeSource(funcExample, SourceType.String)
+                .WithCodeSource(exceptionEx, SourceType.String)
                 .Run(out var ast);
 
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 20)));

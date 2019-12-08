@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 
@@ -11,7 +12,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
     {
         protected internal override CodeGenerationState GenerateInternal(RecordExpr expression, CodeGenerationState state)
         {
-            if (state.State == CodeGenerationStates.Method) throw new Exception("Can not define record in methods");
+            if (state.Scope == CodeGenerationScope.Method) 
+                throw new OpNotAllowedOnScopeException(state.Scope, "TypeDefinition", expression.Pos);
 
             var tb = state.WithType(expression.Name).TypeBuilder;
 

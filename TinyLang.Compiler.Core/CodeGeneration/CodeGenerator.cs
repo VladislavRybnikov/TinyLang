@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 using TinyLang.Compiler.Core.CodeGeneration.Types;
+using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
@@ -24,10 +25,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             return GenerateInternal(Typed(expression), state);
         }
 
-        protected virtual TExpr Typed(Expr expr)
-        {
-            return expr is TExpr typed ? typed : throw new Exception("Wrong expression provided");
-        }
+        protected virtual TExpr Typed(Expr expr) => expr is TExpr typed ? typed
+                : throw new ExprTypeMismatchException(typeof(TExpr), expr.GetType());
 
         protected internal abstract CodeGenerationState GenerateInternal(TExpr expression, CodeGenerationState state);
 

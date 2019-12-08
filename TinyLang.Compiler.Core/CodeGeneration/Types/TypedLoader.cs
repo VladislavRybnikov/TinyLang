@@ -182,7 +182,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromMethodScope(VarExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)
         {
-            if (state.State == CodeGenerationStates.Method)
+            if (state.Scope == CodeGenerationScope.Method)
             {
                 if (state.MethodArgs.TryGetValue(expr.Name, out var arg))
                 {

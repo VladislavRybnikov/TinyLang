@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
@@ -19,7 +20,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         protected internal override CodeGenerationState GenerateInternal(IfElseExpr expression, CodeGenerationState state)
         {
-            var il = state.State == CodeGenerationStates.Method
+            var il = state.Scope == CodeGenerationScope.Method
                 ? state.MethodBuilder.GetILGenerator()
                 : state.MainMethodBuilder.GetILGenerator();
 
@@ -79,9 +80,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             if (predicate != null)
             {
                 var (type, emit) = ValueLoader(predicate, il, state);
+                var boolType = typeof(bool);
 
-                if (type != typeof(bool))
-                    throw new Exception("Wrong predicate value");
+                if (type != boolType)
+                    throw new ExprTypeCastException(boolType, type, predicate.Pos);
 
                 emit();
             }

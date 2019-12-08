@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Generators
@@ -10,7 +11,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
     {
         protected internal override CodeGenerationState GenerateInternal(FuncInvocationExpr expression, CodeGenerationState state)
         {
-            var il = state.State == CodeGenerationStates.Method ? state.MethodBuilder.GetILGenerator()
+            var il = state.Scope == CodeGenerationScope.Method ? state.MethodBuilder.GetILGenerator()
                 : state.MainMethodBuilder.GetILGenerator();
 
             var args = expression.Args.ToArray();
@@ -27,7 +28,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             }
             else
             {
-                throw new Exception("Can not resolve func name");
+                throw new NameResolveException(expression.Name, expression.Pos);
             }
 
             var argsTypes = args.Select(a =>

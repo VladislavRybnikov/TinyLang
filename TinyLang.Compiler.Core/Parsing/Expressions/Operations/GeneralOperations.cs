@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations

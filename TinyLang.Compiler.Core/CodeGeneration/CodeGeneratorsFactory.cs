@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TinyLang.Compiler.Core.CodeGeneration.Generators;
+using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
@@ -10,7 +11,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 {
     public interface ICodeGeneratorsFactory
     {
-        ICodeGenerator GeneratorFor(Type type);
+        ICodeGenerator GeneratorFor(Type type, Type originType = null);
         ICodeGenerator GeneratorFor<T>() where T : Expr;
     }
 
@@ -22,14 +23,17 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
         private CodeGeneratorsFactory() { }
 
-        public ICodeGenerator GeneratorFor(Type type)
+        public ICodeGenerator GeneratorFor(Type type, Type originType = null)
         {
+            originType ??= type;
+
             if (_genartors.TryGetValue(type, out var val))
             {
                 return val;
             }
 
-            return type != typeof(object) ? GeneratorFor(type.BaseType) : throw new Exception("Can not resolve Generator");
+            return type != typeof(object) ? GeneratorFor(type.BaseType, originType) 
+                : throw new MissedGeneratorException(originType);
         }
 
         public ICodeGenerator GeneratorFor<T>() where T : Expr => GeneratorFor(typeof(T));

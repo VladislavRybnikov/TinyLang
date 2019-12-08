@@ -18,6 +18,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             Line = line;
             Column = column;
         }
+
+        public override string ToString()
+        {
+            return $"{{ line: {Line}, column: {Column} }}";
+        }
     }
 
     public abstract class Expr

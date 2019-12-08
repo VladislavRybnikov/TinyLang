@@ -13,10 +13,10 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
         protected internal override CodeGenerationState GenerateInternal(AssignExpr expression, CodeGenerationState state)
         {
-            var ilGenerator = state.State switch
+            var ilGenerator = state.Scope switch
             {
-                CodeGenerationStates.Method => state.MethodBuilder.GetILGenerator(),
-                CodeGenerationStates.Module => state.MainMethodBuilder.GetILGenerator(),
+                CodeGenerationScope.Method => state.MethodBuilder.GetILGenerator(),
+                CodeGenerationScope.Module => state.MainMethodBuilder.GetILGenerator(),
                 _ => throw new Exception()
             };
 

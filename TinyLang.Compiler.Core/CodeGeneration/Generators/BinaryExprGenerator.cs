@@ -13,7 +13,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
         protected internal override CodeGenerationState GenerateInternal(BinaryExpr expression, CodeGenerationState state)
         {
             TypedLoader.FromBinaryExpr(expression,
-                state.State == CodeGenerationStates.Method
+                state.Scope == CodeGenerationScope.Method
                     ? state.MethodBuilder.GetILGenerator()
                     : state.MainMethodBuilder.GetILGenerator(),
                 state,
