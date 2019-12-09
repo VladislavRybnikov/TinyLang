@@ -28,6 +28,7 @@ namespace TinyLang.Compiler.Core.Parsing
             var parser = from s in spaces from x in many1(_parser) 
                          from p in getPos select x.AsEnumerable()
                             .Select(x => x.WithPosition(p.Line, p.Column));
+
             return new AST(ParseWithExceptionThrow(parser, str));
         }
 

@@ -28,7 +28,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
     public abstract class Expr
     {
         [JsonProperty(Order = -2)]
-        public string NodeType => GetType().Name.Replace(nameof(Expr), string.Empty);
+        public virtual string NodeType => GetType().Name.Replace(nameof(Expr), string.Empty);
 
         public Position Pos { get; set; }
 

@@ -6,19 +6,19 @@ using System.Linq;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions
 {
+    [JsonObject]
     public sealed class AST : Expr, IEnumerable<Expr>
     {
-        public Expr[] Expressions { get; }
+        [JsonProperty(Order=2)]
+        public Expr[] Statements { get; }
 
-        public int Length => Expressions.Length;
+        public override string NodeType => null;
 
-        public Expr Head => Expressions.FirstOrDefault();
+        public int Length => Statements.Length;
 
-        public Expr Tail => Expressions.LastOrDefault();
+        public AST(params Expr[] args) => Statements = args;
 
-        public AST(params Expr[] args) => Expressions = args;
-
-        public AST(IEnumerable<Expr> exprs) => Expressions = exprs.ToArray();
+        public AST(IEnumerable<Expr> exprs) => Statements = exprs.ToArray();
 
         public override string ToString()
         {
@@ -31,7 +31,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             });
         }
 
-        public IEnumerator<Expr> GetEnumerator() => Expressions.AsEnumerable().GetEnumerator();
+        public IEnumerator<Expr> GetEnumerator() => Statements.AsEnumerable().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
