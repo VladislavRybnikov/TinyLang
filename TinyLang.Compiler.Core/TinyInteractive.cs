@@ -20,7 +20,7 @@ namespace TinyLang.Compiler.Core
             var tokenizer = new ExprTokenizer();
 
             var builder = new ASTBuilder(exprParserBuilder, tokenizer);
-            return builder.FromStr(line);
+            return builder.FromStr(line).Build();
         }
 
         public static ASTBuilder ASTBuilder

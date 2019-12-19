@@ -26,6 +26,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
 
         public GeneralOperations.VarExpr Var { get; }
 
+        public TypedVar(string name, string type) : this(new GeneralOperations.VarExpr(name), type)
+        {
+
+        }
+
         public TypedVar(GeneralOperations.VarExpr var, TypeExpr type)
         {
             Var = var;

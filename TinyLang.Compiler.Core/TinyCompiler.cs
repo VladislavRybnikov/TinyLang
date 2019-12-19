@@ -24,6 +24,8 @@ namespace TinyLang.Compiler.Core
         void Run();
 
         void Run(out AST ast);
+
+        void RunFromAst(AST ast);
     }
 
     public class TinyCompiler : ICompiler
@@ -50,6 +52,16 @@ namespace TinyLang.Compiler.Core
             return new TinyCompiler(new ASTBuilder(parserBuilder, tokenizer), codeGeneratorsFactory);
         }
 
+        public static ICompiler Create
+        (
+            IASTBuilder builder,
+            ICodeGeneratorsFactory codeGeneratorsFactory
+        )
+        {
+            return new TinyCompiler(builder, codeGeneratorsFactory);
+        }
+
+
         public void Run()
         {
             Run(out _);
@@ -59,10 +71,12 @@ namespace TinyLang.Compiler.Core
         {
             var code = sourceType == SourceType.String ? source : File.ReadAllText(source);
 
-            ast = _astBuilder.FromStr(code);
+            ast = _astBuilder.FromStr(code).Build();
 
             Run(ast);
         }
+
+        public void RunFromAst(AST ast) => Run(ast);
 
         public ICompiler WithAssemblyName(string name)
         {

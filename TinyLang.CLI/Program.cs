@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Linq;
-using TinyLang.Compiler.Core;
-using TinyLang.Compiler.Core.CodeGeneration;
-using TinyLang.Compiler.Core.Parsing;
-using TinyLang.Compiler.Core.Parsing.Expressions;
-using static TinyLang.Compiler.Core.TinyLanguage;
+using TinyLang.Fluent;
 
 namespace TinyLang.CLI
 {
     class Program
     {
-        static ICompiler Compiler = TinyCompiler.Create(
-                new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
-                new ExprTokenizer(),
-                CodeGeneratorsFactory.Instance);
-
         static void Main(string[] args)
         {
             var funcExample = @"
@@ -33,13 +24,6 @@ namespace TinyLang.CLI
                     ";
 
             // 1) lambda functions
-            var lambdaSimple = @"
-                    unit = (x: int) => x
-                    add = (x: int, y: int) => x + y
-                   
-                    print(add(2, 2))
-                    ";
-
             var lambdaEx = @"
                     add = (a: int, b: int) => a + b
                     mul = (a: int, b: int) => a * b
@@ -70,10 +54,12 @@ namespace TinyLang.CLI
                     some = Option.Some(5)
                     ";
 
-            Compiler
-                .WithAssemblyName("test")
-                .WithCodeSource(lambdaEx, SourceType.String)
-                .Run(out var ast);
+            using var engine = TinyLangEngine.FromScript(lambdaEx);
+
+            engine
+                .SetVariable("x", engine.Statements.Invoke("add", "2", "2"))
+                .AddStatement(engine.Statements.Invoke("print", "x"))
+                .Execute(out var ast);
 
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 20)));
             Console.WriteLine("AST");

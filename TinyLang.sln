@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D4
 		Examples\Sample01.tl = Examples\Sample01.tl
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyLang.Fluent", "TinyLang.Fluent\TinyLang.Fluent.csproj", "{7876D21E-4F03-4DD9-9A42-D637120AB3B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{F7797F81-BAAB-4FE0-807B-68E966135861}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7797F81-BAAB-4FE0-807B-68E966135861}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7797F81-BAAB-4FE0-807B-68E966135861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7876D21E-4F03-4DD9-9A42-D637120AB3B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7876D21E-4F03-4DD9-9A42-D637120AB3B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7876D21E-4F03-4DD9-9A42-D637120AB3B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7876D21E-4F03-4DD9-9A42-D637120AB3B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

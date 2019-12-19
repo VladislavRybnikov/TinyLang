@@ -34,5 +34,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         public IEnumerator<Expr> GetEnumerator() => Statements.AsEnumerable().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public static implicit operator AST(Expr[] exprs) => new AST(exprs);
     }
 }
