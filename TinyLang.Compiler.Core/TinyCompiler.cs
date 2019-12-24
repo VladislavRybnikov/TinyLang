@@ -21,11 +21,11 @@ namespace TinyLang.Compiler.Core
         ICompiler WithCodeSource(string source, SourceType sourceType);
         ICompiler WithAssemblyName(string name);
 
-        void Run();
+        object Run();
 
-        void Run(out AST ast);
+        object Run(out AST ast);
 
-        void RunFromAst(AST ast);
+        object RunFromAst(AST ast);
     }
 
     public class TinyCompiler : ICompiler
@@ -62,21 +62,21 @@ namespace TinyLang.Compiler.Core
         }
 
 
-        public void Run()
+        public object Run()
         {
-            Run(out _);
+            return Run(out _);
         }
 
-        public void Run(out AST ast)
+        public object Run(out AST ast)
         {
             var code = sourceType == SourceType.String ? source : File.ReadAllText(source);
 
             ast = _astBuilder.FromStr(code).Build();
 
-            Run(ast);
+            return Run(ast);
         }
 
-        public void RunFromAst(AST ast) => Run(ast);
+        public object RunFromAst(AST ast) => Run(ast);
 
         public ICompiler WithAssemblyName(string name)
         {
@@ -91,7 +91,7 @@ namespace TinyLang.Compiler.Core
             return this;
         }
 
-        private void Run(AST ast) 
+        private object Run(AST ast) 
         {
             var state = CodeGenerationState.BeginCodeGeneration(assemblyName, $"{assemblyName}.Module");
 
@@ -103,7 +103,7 @@ namespace TinyLang.Compiler.Core
             state.MainMethodBuilder.GetILGenerator().Emit(OpCodes.Ret);
             state.ModuleBuilder.CreateGlobalFunctions();
 
-            state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
+            return state.ModuleBuilder.GetMethod("main").Invoke(null, new object[0]);
         }
     }
 }

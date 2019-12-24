@@ -9,8 +9,8 @@ namespace TinyLang.Fluent.Models
     {
         Expr _e;
 
-        public FuncCall(Func<string, Expr> f, string name, params string[] args)
-            => _e = FuncExpr.Invoke(name, args.Select(f));
+        public FuncCall(string name, params IStatement[] args)
+            => _e = FuncExpr.Invoke(name, args.Select(x => x.GetExpr()));
 
         Expr IStatement.GetExpr() => _e;
     }

@@ -15,7 +15,18 @@ namespace TinyLang.Fluent
 
         public IStatement New(string name, params string[] args) => new TypeCreation(name, args);
 
-        public IStatement Invoke(string name, params string[] args) => new FuncCall(Parse, name, args);
+        public IStatement Invoke(string name, params IStatement[] args) => new FuncCall(name, args);
+
+        public IStatement Print(IStatement value) => Invoke("print", value);
+
+        public IStatement Print(string value) => Invoke("print", Val(value));
+
+        public IStatement Val(string str) => new Val(str);
+
+        public IStatement Val(int i) => new Val(i);
+
+        public IStatement Val(bool b) => new Val(b);
+
 
         private Expr Parse(string str) => builder.FromStr(str).Build().Statements.FirstOrDefault();
     }

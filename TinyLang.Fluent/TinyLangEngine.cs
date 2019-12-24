@@ -13,6 +13,9 @@ using static TinyLang.Compiler.Core.TinyLanguage;
 
 namespace TinyLang.Fluent
 {
+
+    public delegate IStatement StatementSelector(Statements statements);
+
     public interface ITinyLangEngine : IDisposable
     {
         Statements Statements { get; }
@@ -23,13 +26,13 @@ namespace TinyLang.Fluent
 
         ITinyLangEngine SetVariable(string name, string val);
 
-        ITinyLangEngine SetVariable(string name, IStatement val);
+        ITinyLangEngine SetVariable(string name, StatementSelector st);
 
         ITinyLangEngine SetVariableDynamic(string name, string val);
 
         ITinyLangEngine DefineType(string name, Dictionary<string, string> args);
 
-        ITinyLangEngine AddStatement(IStatement st);
+        ITinyLangEngine AddStatement(StatementSelector st);
 
         void Execute();
 
@@ -89,13 +92,14 @@ namespace TinyLang.Fluent
         public ITinyLangEngine SetVariable(string name, bool val) => SetVariable(name, new Val(val));
 
         public ITinyLangEngine SetVariable(string name, string val) => SetVariable(name, new Val(val));
+        public ITinyLangEngine SetVariable(string name, StatementSelector st) => SetVariable(name, st(Statements));
 
         public ITinyLangEngine SetVariableDynamic(string name, string val)
         {
             throw new NotImplementedException();
         }
 
-        public ITinyLangEngine SetVariable(string name, IStatement val)
+        private ITinyLangEngine SetVariable(string name, IStatement val)
         {
             var variable = new VarExpr(name);
             var assignment = new AssignExpr(variable, val.GetExpr());
@@ -107,15 +111,15 @@ namespace TinyLang.Fluent
         {
             ast = ASTBuilder.Build();
 
-            TinyCompiler.Create(ASTBuilder,
+            var res = TinyCompiler.Create(ASTBuilder,
                 CodeGeneratorsFactory.Instance)
                 .WithAssemblyName("engineInteractive")
                 .RunFromAst(ast);
         }
 
-        public ITinyLangEngine AddStatement(IStatement st)
+        public ITinyLangEngine AddStatement(StatementSelector st)
         {
-            ASTBuilder.AddStatement(st.GetExpr());
+            ASTBuilder.AddStatement(st(Statements).GetExpr());
             return this;
         }
     }

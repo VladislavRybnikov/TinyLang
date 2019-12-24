@@ -54,12 +54,11 @@ namespace TinyLang.CLI
                     some = Option.Some(5)
                     ";
 
-            using var engine = TinyLangEngine.FromScript(lambdaEx);
+            using var engine = TinyLangEngine
+                .FromScript(lambdaEx)
+                .AddStatement(st => st.Print("Executed by TinyLangEngine"));
 
-            engine
-                .SetVariable("x", engine.Statements.Invoke("add", "2", "2"))
-                .AddStatement(engine.Statements.Invoke("print", "x"))
-                .Execute(out var ast);
+            engine.Execute(out var ast);
 
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 20)));
             Console.WriteLine("AST");
