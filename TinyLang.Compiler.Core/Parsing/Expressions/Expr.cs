@@ -30,7 +30,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
         [JsonProperty(Order = -2)]
         public virtual string NodeType => GetType().Name.Replace(nameof(Expr), string.Empty);
 
-        public Position Pos { get; set; }
+        public Position Pos { get; set; } = new Position(0, 0);
 
         public Expr WithPosition(int line, int column) 
         {

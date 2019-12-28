@@ -20,6 +20,8 @@ namespace TinyLang.Fluent
     {
         Statements Statements { get; }
 
+        IASTBuilder NewASTBuilder { get; }
+
         ITinyLangEngine SetVariable(string name, int val);
 
         ITinyLangEngine SetVariable(string name, bool val);
@@ -44,9 +46,11 @@ namespace TinyLang.Fluent
         private IASTBuilder _astBuilder;
         private Statements _statements;
 
-        IASTBuilder ASTBuilder => _astBuilder 
-            ?? (_astBuilder = new ASTBuilder(new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
-                new ExprTokenizer()));
+        public IASTBuilder NewASTBuilder => new ASTBuilder(new ParserBuilder<Expr>(GetExprValueParser, TokenParser.ReservedOp),
+                new ExprTokenizer());
+
+        public IASTBuilder ASTBuilder => _astBuilder 
+            ?? (_astBuilder = NewASTBuilder);
 
         private TinyLangEngine() 
         {

@@ -34,9 +34,9 @@ namespace TinyLang.Compiler.Core.Parsing
 
         public IASTBuilder FromStr(string str)
         {
-            var parser = from s in spaces from x in many1(_parser) 
-                         from p in getPos select x.AsEnumerable()
-                            .Select(x => x.WithPosition(p.Line, p.Column));
+            var parser = 
+                         from s in spaces from x in many1(_parser) 
+                         select x.AsEnumerable();
 
             _ast = new AST(ParseWithExceptionThrow(parser, str));
 
@@ -53,7 +53,7 @@ namespace TinyLang.Compiler.Core.Parsing
         private T ParseWithExceptionThrow<T>(Parser<T> parser, string line)
         {
             var parsed = parse(parser, line);
-            return parsed.IsFaulted ? throw new Exception(parsed.Reply.Error.ToString()) : parsed.Reply.Result;
+          return parsed.IsFaulted ? throw new Exception(parsed.Reply.Error.ToString()) : parsed.Reply.Result;
         }
 
         public IASTBuilder Empty()

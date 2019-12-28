@@ -46,10 +46,11 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
 
         public static Parser<Expr> FuncInvocation(Parser<Expr> parser)
         {
-            return from name in TokenParser.Identifier
+            return from p in getPos
+                   from name in TokenParser.Identifier
                    from args in TokenParser.ParensCommaSep(parser)
                    where !LanguageDef.ReservedOpNames.Contains(name)
-                   select FuncExpr.Invoke(name, args);
+                   select FuncExpr.Invoke(name, args).WithPosition(p);
         }
 
         private static Parser<IEnumerable<TypedVar>> Args() =>

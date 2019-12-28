@@ -1,105 +1,86 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using Newtonsoft.Json.Linq;
+using System.Windows.Documents;
+using System.Windows.Media;
+using TinyLang.Compiler.Core.Parsing;
+using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Fluent;
+using TinyLang.IDE.Services.ScriptAnalyze;
+using TinyLang.IDE.Services.ScriptAnalyze.Models;
+using TinyLang.IDE.Services.ScriptRunning;
+using TinyLang.IDE.Utils;
+using TinyLang.IDE.Utils.SyntaxDefinition;
 
 namespace TinyLang.IDE
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public class ControlWriter : TextWriter
+    public partial class MainWindow : Window
     {
-    private TextBox textbox;
-    public ControlWriter(TextBox textbox)
-    {
-        this.textbox = textbox;
-    }
+        private TextRange lastTextRange;
+        private readonly IScriptRunObservable _runner = new ScriptRunner();
+        private readonly IScriptAnalyzer _analyzer; 
+        private readonly List<IScriptRunObserver> _runObservers = new List<IScriptRunObserver>();
 
-    public override void Write(char value)
-    {
-        textbox.Text += value;
-    }
-
-    public override void Write(string value)
-    {
-        textbox.Text += value;
-    }
-
-    public override Encoding Encoding
-    {
-        get { return Encoding.ASCII; }
-    }
-    }
-public partial class MainWindow : Window
-    {
         public MainWindow()
         {
             InitializeComponent();
             Console.SetOut(new ControlWriter(txtBx2));
-            btn1.Click += (s, e) =>
-            {
-                tv1.Items.Clear();
 
-                using var engine = TinyLangEngine
-                    .FromScript(txtBx1.Text);
+            _analyzer = new ScriptAnalyzer();
 
-                engine.Execute(out var ast);
-                var astJson = JToken.Parse(ast.ToString());
-                tv1.Items.Add(JsonToTree(astJson, "AST"));
-            };
+            _runObservers.Add(new ScriptRunOutput(txtBx2, tv1));
+            _runObservers.ForEach(observer => _runner.Subscribe(observer));
+            txtBx1.SyntaxHighlighting = new TinyLangDefinition();
+
+            //var sub = Observable.FromEventPattern(txtBx1, nameof(txtBx1.TextChanged))
+            //    .Select(_ => txtBx1.Document.FullRange().Text)
+            //    .Where(t => t.Length > 2)
+            //    .Throttle(TimeSpan.FromSeconds(0.5))
+            //    .DistinctUntilChanged()
+            //    .Select(async (r) => await _analyzer.AnalyzeForTagsAsync(r))
+            //    .Switch()
+            //    .SelectMany(t => t)
+            //    .Where(x => x != null)
+            //    .DistinctUntilChanged()
+            //    .Distinct()
+            //    .ObserveOnDispatcher()
+            //    .Subscribe(HighlightTag);
+
+            btn1.Click += OnBtn1Click;
+
         }
 
-        public static TreeViewItem JsonToTree(JToken root, string rootName = "")
-        {
-            var parent = new TreeViewItem{Header = rootName};
+        private void OnBtn1Click(object sender, RoutedEventArgs args)
+           // => _runner.Run(txtBx1.Document.FullRange().Text);
+           => _runner.Run(txtBx1.Text);
 
-            ((root as JObject)?.Properties() ?? Enumerable.Empty<JProperty>())
-                .Select(AsTreeItem)
-                .ToList().ForEach(x => parent.Items.Add(x));
+        //private void HighlightTag(Tag tag)
+        //{
+        //    var lines = txtBx1.Document.Blocks.ToArray();
 
-            return parent;
-        }
+        //    var lineNum = tag.Line;
 
-        public static TreeViewItem JsonObjectToTree(JObject obj, string key)
-        {
-            var parent = new TreeViewItem { Header = key };
+        //    var line = lines[lineNum];
 
-            foreach (var prop in obj?.Properties() ?? Enumerable.Empty<JProperty>())
-            {
-                var name = prop.Name;
-                parent.Items.Add(AsTreeItem(prop));
-            }
+        //    var startOffset = tag.Type == TagType.StringLiteral ? 2 : 0;
+        //    var endOffset = tag.Type == TagType.StringLiteral ? 2 : 0;
 
-            return parent;
-        }
+        //    var s = line.ContentStart.GetPositionAtOffset(tag.Column + 1 + startOffset);
+        //    var e = s.GetPositionAtOffset(tag.Value.Length + endOffset);
 
-        public static TreeViewItem JsonArrayToTree(JArray arr, string key)
-        {
-            var parent = new TreeViewItem { Header = key };
-
-            foreach (var (jToken, i1) in arr.Select((v, i) => (v, i)))
-            {
-                parent.Items.Add(AsTreeItem(new JProperty(i1.ToString(), jToken)));
-            }
-
-            return parent;
-        }
-
-        public static TreeViewItem JsonPropertyToTree(JProperty jp) =>
-            new TreeViewItem {Header = jp.Name + ": " + jp.Value};
-
-        public static TreeViewItem AsTreeItem(JProperty jp)
-            => jp.Value.Type switch
-            {
-                JTokenType.Object => JsonObjectToTree(jp.Value as JObject, jp.Name),
-                JTokenType.Array => JsonArrayToTree(jp.Value as JArray, jp.Name),
-                _ => JsonPropertyToTree(jp)
-            };
+        //    var range = new TextRange(s, e);
+        //    range.ClearAllProperties();
+        //    var brush = tag.Type switch
+        //    {
+        //        TagType.FuncName => Brushes.Blue,
+        //        TagType.StringLiteral => Brushes.Orange,
+        //        _ => Brushes.Black
+        //    };
+            
+        //    range.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
+        //}
     }
 }

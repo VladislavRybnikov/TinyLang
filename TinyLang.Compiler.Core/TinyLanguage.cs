@@ -57,8 +57,8 @@ namespace TinyLang.Compiler.Core
                 attempt(StrParser),
                 VarParser);
 
-            return from e in parser
-                   from p in getPos
+            return from p in getPos
+                   from e in parser
                    select e.WithPosition(p.Line, p.Column);
         }
 
@@ -80,7 +80,7 @@ namespace TinyLang.Compiler.Core
                                || string.Equals(w, "false", StringComparison.OrdinalIgnoreCase)
                          select Bool(bool.Parse(w));
 
-            StrParser = from str in TokenParser.StringLiteral select Str(str);
+            StrParser = from p in getPos from str in TokenParser.StringLiteral select Str(str).WithPosition(p);
 
             IdentifierParser = from w in asString(from word in many1(letter)
                                                 from sp in spaces
