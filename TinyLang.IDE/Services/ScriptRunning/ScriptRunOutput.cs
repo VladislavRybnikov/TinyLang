@@ -35,6 +35,7 @@ namespace TinyLang.IDE.Services.ScriptRunning
         public void OnNext(AST value)
         {
             var astTree = JToken.Parse(value.ToString()).ToTreeViewItem("AST");
+            _astTreeView.Items.Clear();
             _astTreeView.Items.Add(astTree);
         }
     }

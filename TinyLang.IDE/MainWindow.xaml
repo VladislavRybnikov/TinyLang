@@ -3,20 +3,37 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TinyLang.IDE"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Height="469">
-        <avalonedit:TextEditor x:Name="txtBx1" HorizontalAlignment="Left" Height="320" Margin="20,59,0,0" VerticalAlignment="Top" Width="451" BorderBrush="Black" 
-                               ShowLineNumbers="True" BorderThickness="1">
+        Title="MainWindow" Height="518" Width="803">
+    <Grid Height="469" Margin="0,0,-13,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
-        </avalonedit:TextEditor>
-        <Button x:Name="btn1" Content="Run" HorizontalAlignment="Left" Height="36" Margin="20,13,0,0" VerticalAlignment="Top" Width="35" Background="Green" Foreground="White" FontWeight="Bold"/>
-        <TreeView x:Name="tv1" HorizontalAlignment="Left" Height="138" Margin="494,59,0,0" VerticalAlignment="Top" Width="231" BorderBrush="Black"/>
-        <TextBox x:Name="txtBx2" HorizontalAlignment="Left" Height="140" Margin="494,239,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" BorderBrush="Black" AcceptsReturn="True"/>
-        <Label Content="AST Viwer" HorizontalAlignment="Left" Margin="494,29,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue"/>
-        <Label Content="Console Out" HorizontalAlignment="Left" Margin="502,209,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue"/>
-
+        <avalonedit:TextEditor x:Name="txtBx1" HorizontalAlignment="Center" Height="AUTO" VerticalAlignment="Center" Width="492" BorderBrush="Black" 
+                               ShowLineNumbers="True" BorderThickness="1" Grid.Row="1"/>
+        <Button x:Name="btn1" Grid.Column="0" Grid.Row="0" Content="Run" HorizontalAlignment="Left" Height="36" Margin="20,13,0,0" VerticalAlignment="Top" Width="35" Background="Green" Foreground="White" FontWeight="Bold"/>
+        <TreeView x:Name="tv1" HorizontalAlignment="Left" Height="119"  VerticalAlignment="Top" Width="224" BorderBrush="Black" Grid.Row="1" Grid.Column="1" RenderTransformOrigin="0.514,0.52" Margin="12,29,0,0"/>
+        <TextBox x:Name="txtBx2" HorizontalAlignment="Left" Height="98" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="226" BorderBrush="Black" AcceptsReturn="True" RenderTransformOrigin="0.501,0.216" Margin="10,188,0,0" Grid.Column="1"/>
+        <Label Content="AST Viwer" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Foreground="DarkSlateGray" Grid.Row="1" Grid.Column="1" Margin="45,0,0,0" ToolTip="Shows generated AST"/>
+        <Label Content="Console Output" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Foreground="DarkSlateGray" Grid.Row="1" Margin="38,157,0,0" Grid.Column="1"/>
+        <Label x:Name="lnLbl" Content="Ln:" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" Grid.Column="0" RenderTransformOrigin="1.737,0.771" Margin="419,0,0,0"/>
+        <Label x:Name="chLbl" Content="Ch:" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" Grid.Column="0" RenderTransformOrigin="1.737,0.771" Margin="470,0,0,0"/>
+        <Label x:Name="chValueLbl" Content="0" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" Grid.Column="0" RenderTransformOrigin="1.737,0.771" Margin="491,0,0,0"/>
+        <Label x:Name="lnValueLbl" Content="0" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" Grid.Column="0" RenderTransformOrigin="1.737,0.771" Margin="439,0,0,0"/>
+        <Label x:Name="lnCountLbl" Content="Lines:" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" RenderTransformOrigin="1.737,0.771" Margin="24,0,0,0"/>
+        <Label x:Name="lnCountValueLbl" Content="0" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Top" FontWeight="Normal" Foreground="Black" Grid.Row="2" RenderTransformOrigin="1.737,0.771" Margin="59,1,0,0"/>
+        <Image HorizontalAlignment="Left" Height="26" Margin="11,0,0,0" VerticalAlignment="Top" Width="35" Grid.Column="1" Source="/resources/img/642305-200.png" Stretch="Fill" Grid.Row="1" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}" MinWidth="35" MinHeight="20" Grid.IsSharedSizeScope="True"/>
+        <Image HorizontalAlignment="Left" Height="25" Margin="11,158,0,0" VerticalAlignment="Top" Width="31" Grid.Column="1" Source="/resources/img/consol-512.png" Stretch="Fill" Grid.Row="1" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}" Grid.IsSharedSizeScope="True" Visibility="Visible"/>
+        <Button Content="clear" Grid.Column="1" HorizontalAlignment="Left" Margin="207,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
+        <Button Content="clear" Grid.Column="1" HorizontalAlignment="Left" Margin="207,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
+        <Button Content="clear" Grid.Column="1" HorizontalAlignment="Left" Margin="207,162,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
     </Grid>
 </Window>

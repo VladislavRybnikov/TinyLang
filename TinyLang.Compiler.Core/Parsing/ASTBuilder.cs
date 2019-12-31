@@ -6,6 +6,7 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using System.Linq;
+using TinyLang.Compiler.Core.Common.Exceptions.Base;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
@@ -53,7 +54,16 @@ namespace TinyLang.Compiler.Core.Parsing
         private T ParseWithExceptionThrow<T>(Parser<T> parser, string line)
         {
             var parsed = parse(parser, line);
-          return parsed.IsFaulted ? throw new Exception(parsed.Reply.Error.ToString()) : parsed.Reply.Result;
+            var error = parsed.Reply.Error;
+
+            if (error.Tag == ParserErrorTag.Message 
+                || (error.Msg != "end of stream" && error.Tag == ParserErrorTag.Expect)) 
+            {
+                throw new PositionedException(new Position(error.Pos), "parser error");
+            }
+
+            return parsed.IsFaulted ? throw new PositionedException(new Position(error.Pos), "parser error")
+                : parsed.Reply.Result;
         }
 
         public IASTBuilder Empty()

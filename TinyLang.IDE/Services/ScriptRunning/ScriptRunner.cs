@@ -32,8 +32,6 @@ namespace TinyLang.IDE.Services.ScriptRunning
             {
                 _subject.OnError(ex);
             }
-
-            _subject.OnCompleted();
         }
 
         public IDisposable Subscribe(IObserver<AST> observer) => _subject.Subscribe(observer);

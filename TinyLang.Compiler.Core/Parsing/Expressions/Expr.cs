@@ -19,6 +19,8 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
             Column = column;
         }
 
+        public Position(Pos pos) : this(pos.Line, pos.Column) { }
+
         public override string ToString()
         {
             return $"{{ line: {Line}, column: {Column} }}";

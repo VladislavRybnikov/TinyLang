@@ -8,12 +8,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\img\642305-200.png" />
+    <None Remove="resources\img\consol-512.png" />
+    <None Remove="resources\img\Function-PNG-Image.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.0" />
     <PackageReference Include="System.Reactive" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TinyLang.Fluent\TinyLang.Fluent.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="resources\img\642305-200.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\img\consol-512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\img\Function-PNG-Image.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
