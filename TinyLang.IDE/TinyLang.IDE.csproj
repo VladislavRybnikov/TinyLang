@@ -5,11 +5,17 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>8</LangVersion>
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\img\139127-200.png" />
     <None Remove="resources\img\642305-200.png" />
+    <None Remove="resources\img\brackets-27345_960_720.png" />
+    <None Remove="resources\img\condition.png" />
     <None Remove="resources\img\consol-512.png" />
+    <None Remove="resources\img\function-png-5.png" />
     <None Remove="resources\img\Function-PNG-Image.png" />
   </ItemGroup>
 
@@ -23,15 +29,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="resources\img\642305-200.png">
+    <Content Include="resources\img\139127-200.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="resources\img\consol-512.png">
+    </Content>
+    <Content Include="resources\img\642305-200.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="resources\img\Function-PNG-Image.png">
+    </Content>
+    <Content Include="resources\img\brackets-27345_960_720.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
+    <Content Include="resources\img\condition.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\consol-512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\function-png-5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\Function-PNG-Image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

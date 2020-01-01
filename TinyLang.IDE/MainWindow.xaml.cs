@@ -24,21 +24,23 @@ namespace TinyLang.IDE
         private IScriptAnalyzer _analyzer;
         private ITextMarkerService _textMarkerService;
         private ILineChangeTracker _lineTracker;
-        private readonly List<IScriptRunObserver> _runObservers = new List<IScriptRunObserver>();
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeRunComponents();
             InitializeAnalyzeComponents();
+
         }
 
         private void InitializeRunComponents() 
         {
             Console.SetOut(new ControlWriter(txtBx2));
 
-            _runObservers.Add(new ScriptRunOutput(txtBx2, tv1));
-            _runObservers.ForEach(observer => _runner.Subscribe(observer));
+            var runOutput = new ScriptRunOutput(txtBx2, tv1);
+            runOutput.AddTreeViewEnricher(new TreeViewIconEnricher());
+
+            _runner.Subscribe(runOutput);
 
             btn1.Click += OnBtn1Click;
         }

@@ -55,5 +55,7 @@ namespace TinyLang.IDE.Utils.Extensions
                 JTokenType.Array => JsonArrayToTree(jp.Value as JArray, jp.Name),
                 _ => JsonPropertyToTree(jp)
             };
+
+
     }
 }
