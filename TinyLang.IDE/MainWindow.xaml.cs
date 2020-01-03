@@ -1,17 +1,11 @@
-﻿using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Rendering;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using TinyLang.Compiler.Core.Common.Exceptions.Base;
 using TinyLang.IDE.Services.ScriptAnalyze;
 using TinyLang.IDE.Services.ScriptAnalyze.TextMarkers;
 using TinyLang.IDE.Services.ScriptRunning;
-using TinyLang.IDE.Utils;
 using TinyLang.IDE.Utils.Extensions;
 using TinyLang.IDE.Utils.SyntaxDefinition;
 
@@ -20,10 +14,10 @@ namespace TinyLang.IDE
 
     public partial class MainWindow : Window
     {
-        private readonly IScriptRunObservable _runner = new ScriptRunner();
         private IScriptAnalyzer _analyzer;
         private ITextMarkerService _textMarkerService;
         private ILineChangeTracker _lineTracker;
+        private IScriptRunProcessor _scriptRunProcessor;
 
         public MainWindow()
         {
@@ -35,14 +29,19 @@ namespace TinyLang.IDE
 
         private void InitializeRunComponents() 
         {
-            Console.SetOut(new ControlWriter(txtBx2));
+            _scriptRunProcessor = new ScriptRunProcessor
+            {
+                OutputTextBox = txtBx2,
+                ASTTreeView = tv1
+            };
 
-            var runOutput = new ScriptRunOutput(txtBx2, tv1);
-            runOutput.AddTreeViewEnricher(new TreeViewIconEnricher());
+            _scriptRunProcessor.AddTreeViewEnricher(new TreeViewIconEnricher());
 
-            _runner.Subscribe(runOutput);
-
-            btn1.Click += OnBtn1Click;
+            Observable
+                .FromEventPattern(btn1, nameof(btn1.Click))
+                .Select(_  => txtBx1.Text)
+                .SubscribeOnDispatcher()
+                .Subscribe(_scriptRunProcessor);
         }
 
         private void InitializeAnalyzeComponents()
@@ -63,9 +62,6 @@ namespace TinyLang.IDE
             ParseErrors.Subscribe(OnParseError);
 
         }
-
-        private void OnBtn1Click(object sender, RoutedEventArgs args)
-           => _runner.Run(txtBx1.Text);
 
         private IObservable<PositionedException> ParseErrors => Observable.FromEventPattern(txtBx1, nameof(txtBx1.TextChanged))
                 .Select(_ => txtBx1.Text)
