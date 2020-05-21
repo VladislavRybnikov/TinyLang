@@ -15,8 +15,13 @@
     <None Remove="resources\img\brackets-27345_960_720.png" />
     <None Remove="resources\img\condition.png" />
     <None Remove="resources\img\consol-512.png" />
+    <None Remove="resources\img\file-png-vettoriale.png" />
     <None Remove="resources\img\function-png-5.png" />
     <None Remove="resources\img\Function-PNG-Image.png" />
+    <None Remove="resources\img\lambda.png" />
+    <None Remove="resources\img\Save-icon.png" />
+    <None Remove="resources\img\Settings-icon.png" />
+    <None Remove="resources\img\Start-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,16 +49,34 @@
     <Content Include="resources\img\consol-512.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="resources\img\file-png-vettoriale.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="resources\img\function-png-5.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\img\Function-PNG-Image.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="resources\img\lambda.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\Settings-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\Start-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="resources\img\Save-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

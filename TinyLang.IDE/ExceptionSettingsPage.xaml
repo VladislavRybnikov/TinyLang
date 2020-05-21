@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="TinyLang.IDE.ExceptionSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TinyLang.IDE"
+             mc:Ignorable="d" Height="372" Width="301">
+    <Grid Background="GhostWhite" HorizontalAlignment="Left" Width="301" Margin="0,0,0,10">
+        <CheckBox Content="Enable Compile-Time errors" Margin="24,37,33,306"/>
+        <CheckBox Content="Enable InteliSense" Margin="24,66,33,276"/>
+
+    </Grid>
+</UserControl>

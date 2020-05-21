@@ -13,5 +13,6 @@ namespace TinyLang.IDE
     /// </summary>
     public partial class App : Application
     {
+        public AppSettings Settings { get; set; } = new AppSettings();
     }
 }

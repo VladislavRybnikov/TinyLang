@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="TinyLang.IDE.GeneralSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TinyLang.IDE"
+             mc:Ignorable="d" Height="390" Width="298">
+    <Grid Background="GhostWhite" HorizontalAlignment="Center" Width="298">
+        <ComboBox Margin="90,33,79,334">
+            <ComboBoxItem Content="Integrated Console" IsSelected="True"></ComboBoxItem>
+            <ComboBoxItem Content="New Console"></ComboBoxItem>
+        </ComboBox>
+        <Label Content="Output Type:" Margin="10,30,159,315"/>
+
+    </Grid>
+</UserControl>

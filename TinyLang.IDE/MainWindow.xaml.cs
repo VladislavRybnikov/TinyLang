@@ -38,7 +38,7 @@ namespace TinyLang.IDE
             _scriptRunProcessor.AddTreeViewEnricher(new TreeViewIconEnricher());
 
             Observable
-                .FromEventPattern(btn1, nameof(btn1.Click))
+                .FromEventPattern(RunMenuItem, nameof(RunMenuItem.Click))
                 .Select(_  => txtBx1.Text)
                 .SubscribeOnDispatcher()
                 .Subscribe(_scriptRunProcessor);
@@ -91,6 +91,24 @@ namespace TinyLang.IDE
             _textMarkerService.RemoveAll(m => change.Offset >= m.StartOffset
                        && m.StartOffset + m.Length <= change.Offset + change.ChangedLine.Length);
             lnCountValueLbl.Content = _lineTracker.LinesCount + 1;
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            (new SettingsForm
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            }).ShowDialog();
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            txtBx1.Undo();
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            txtBx2.Redo();
         }
     }
 }

@@ -40,7 +40,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
         public static Parser<Expr> ElseParser(Parser<Expr> parser)
         {
             return from s in StrValue(ReservedNames.Else)
-                    from sp in many(space)
+                   from sp in many(space)
                    from scope in Scope(parser)
                    select new ElseExpr { Scope = scope as Scope } as Expr;
         }
@@ -58,9 +58,9 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
         public static Parser<Expr> IfParser(Parser<Expr> parser)
         {
             return from s in StrValue(ReservedNames.If)
-                    from sp in many(space)
+                   from sp in many(space)
                    from expr in TokenParser.Parens(parser)
-                    from sp1 in many(space)
+                   from sp1 in many(space)
                    from scope in Scope(parser)
                    select new IfExpr(expr) { Scope = scope as Scope } as Expr;
 
