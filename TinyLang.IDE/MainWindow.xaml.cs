@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using TinyLang.Compiler.Core.Common.Exceptions.Base;
 using TinyLang.IDE.Services.ScriptAnalyze;
@@ -36,10 +37,19 @@ namespace TinyLang.IDE
             };
 
             _scriptRunProcessor.AddTreeViewEnricher(new TreeViewIconEnricher());
+            _scriptRunProcessor.CompilationErrorOccured.Subscribe(er 
+                => MessageBox.Show(er.Message, "Compilation error", MessageBoxButton.OK, MessageBoxImage.Error));
 
-            Observable
-                .FromEventPattern(RunMenuItem, nameof(RunMenuItem.Click))
-                .Select(_  => txtBx1.Text)
+            var runRequested = Observable.Merge(new []
+            {
+                Observable.FromEventPattern(RunMenuItem, nameof(RunMenuItem.Click)),
+                Observable.FromEventPattern(DebugRunMenuItem, nameof(DebugRunMenuItem.Click)),
+                Observable.FromEventPattern(this, nameof(KeyDown))
+                    .Where(_ => Keyboard.Modifiers == ModifierKeys.Control && Keyboard.IsKeyDown(Key.F5))
+            });
+
+            
+            runRequested.Select(_  => txtBx1.Text)
                 .SubscribeOnDispatcher()
                 .Subscribe(_scriptRunProcessor);
         }
@@ -109,6 +119,16 @@ namespace TinyLang.IDE
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
             txtBx2.Redo();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            tv1.Items.Clear();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            txtBx2.Clear();
         }
     }
 }

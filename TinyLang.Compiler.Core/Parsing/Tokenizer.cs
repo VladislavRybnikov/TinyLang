@@ -8,6 +8,7 @@ using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.WhileParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.RecordParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.FuncParsers;
+using static TinyLang.Compiler.Core.Parsing.Parsers.ForParsers;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
@@ -41,7 +42,7 @@ namespace TinyLang.Compiler.Core.Parsing
 
             //exprParser = either(attempt(FuncInvocation(lazyp(() => exprParser))), exprParser);
 
-            var parser = Compose(exprParser, IfElse, While, DoWhile, FuncDefinition);
+            var parser = Compose(exprParser, IfElse, For, While, DoWhile, FuncDefinition);
 
             parser = Add(parser, Records);
 

@@ -18,7 +18,8 @@ namespace TinyLang.IDE.Utils.SyntaxDefinition
             [ColorType.TypeKeyword] = BoldForeground(Colors.Blue, ColorType.TypeKeyword.ToString()),
             [ColorType.TypeDecalration] = BoldForeground(Colors.Teal, ColorType.TypeKeyword.ToString()),
             [ColorType.ReturnKeyword] = BoldForeground(Colors.Blue, ColorType.ReturnKeyword.ToString()),
-            [ColorType.NewKeyword] = BoldForeground(Colors.Blue, ColorType.NewKeyword.ToString())
+            [ColorType.NewKeyword] = BoldForeground(Colors.Blue, ColorType.NewKeyword.ToString()),
+            [ColorType.TerminalKeyword] = BoldForeground(Colors.DarkCyan, ColorType.NewKeyword.ToString())
         };
 
         public static HighlightingColor Foreground(Color color, string name)

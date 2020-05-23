@@ -12,6 +12,7 @@ namespace TinyLang.IDE.Utils.SyntaxDefinition
         TypeDecalration,
         StringLiteral,
         ReturnKeyword,
-        NewKeyword
+        NewKeyword,
+        TerminalKeyword
     }
 }

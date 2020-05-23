@@ -22,7 +22,7 @@ namespace TinyLang.CLI
 
                     print(validateAge(u))
                     ";
-
+            var forEx = "for(x in list) | for(0 to 5 step 1)";
             // 1) lambda functions
             var lambdaEx = @"
                     add = (a: int, b: int) => a + b

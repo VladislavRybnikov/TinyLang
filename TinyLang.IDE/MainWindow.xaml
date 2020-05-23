@@ -34,15 +34,15 @@
         <Image HorizontalAlignment="Left" Height="26" Margin="11,0,0,0" VerticalAlignment="Top" Width="35" Grid.Column="1" Source="/resources/img/642305-200.png" Stretch="Fill" Grid.Row="1" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}" MinWidth="35" MinHeight="20" Grid.IsSharedSizeScope="True" Grid.ColumnSpan="2"/>
         <Image HorizontalAlignment="Left" Height="25" Margin="11,147,0,0" VerticalAlignment="Top" Width="31" Grid.Column="1" Source="/resources/img/consol-512.png" Stretch="Fill" Grid.Row="2" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}" Grid.IsSharedSizeScope="True" Visibility="Visible" Grid.ColumnSpan="2"/>
         <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
-        <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
-        <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,151,0,0" Grid.Row="2" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal"/>
+        <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal" Click="Button_Click"/>
+        <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,151,0,0" Grid.Row="2" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal" Click="Button_Click_1"/>
         <Menu Grid.ColumnSpan="3" Margin="0,0,10,39">
             <MenuItem Header="File">
                 <MenuItem Header="Open"></MenuItem>
                 <MenuItem Header="Save (Ctrl+S)"></MenuItem>
                 <MenuItem Header="Recent Files"></MenuItem>
             </MenuItem>
-            <MenuItem Name="SaveMenuItem" Width="22">
+            <MenuItem Name="SaveMenuItem" Width="22" ToolTip="Ctrl+S">
                 <MenuItem.Icon >
                     <Image Source="resources/img/Save-icon.png" Visibility="Visible" Width="18" Height="22" Margin="0,0,0,0"/>
                 </MenuItem.Icon>
@@ -59,12 +59,12 @@
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Undo (Ctrl-Z)" Click="MenuItem_Click_1"></MenuItem>
-                <MenuItem Header="Redo" Click="MenuItem_Click_2"></MenuItem>
+                <MenuItem Header="Redo (Ctrl-Y)" Click="MenuItem_Click_2"></MenuItem>
             </MenuItem>
             <MenuItem Header="Debug">
-                <MenuItem Header="Run (Ctrl+F5)"></MenuItem>
+                <MenuItem Name="DebugRunMenuItem" Header="Run (Ctrl+F5)"></MenuItem>
             </MenuItem>
-            <MenuItem Name="RunMenuItem" Width="22">
+            <MenuItem Name="RunMenuItem" Width="22" ToolTip="Ctrl+F5">
                 <MenuItem.Icon >
                     <Image Source="resources/img/Start-icon.png" Visibility="Visible" Width="12" Height="12" Margin="0,3,0,0"/>
                 </MenuItem.Icon>

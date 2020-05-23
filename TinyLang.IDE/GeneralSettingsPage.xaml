@@ -11,6 +11,14 @@
             <ComboBoxItem Content="New Console"></ComboBoxItem>
         </ComboBox>
         <Label Content="Output Type:" Margin="10,30,159,315"/>
+        <ComboBox Margin="90,78,79,289">
+            <ComboBoxItem Content="Light" IsSelected="True"/>
+        </ComboBox>
+        <Label Content="Theme:" Margin="39,75,192,279"/>
+        <CheckBox Content="Enabled" Margin="90,126,121,245" IsEnabled="False" IsChecked="True"/>
+        <Label Content="AST output:" Margin="14,118,209,236"/>
+        <CheckBox Content="Disabled" Margin="90,167,121,204" IsEnabled="False" IsChecked="False"/>
+        <Label Content="Debugging:" Margin="14,159,209,195"/>
 
     </Grid>
 </UserControl>

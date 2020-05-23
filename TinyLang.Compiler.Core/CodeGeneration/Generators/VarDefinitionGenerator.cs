@@ -59,6 +59,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
         private bool TryGetVar(string name, CodeGenerationState state, out LocalBuilder lb)
         {
             lb = null;
+            if (name == "index" && state.Scope == CodeGenerationScope.Loop) 
+            {
+                lb = state.LoopIndex;
+                return true;
+            }
+
             var res = (state.MainVariables?.TryGetValue(name, out lb) ?? false)
                       || (state.MethodVariables?.TryGetValue(name, out lb) ?? false);
 

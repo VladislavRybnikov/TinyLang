@@ -61,7 +61,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                    from sp in many(space)
                    from expr in TokenParser.Parens(parser)
                    from sp1 in many(space)
-                   from scope in Scope(parser)
+                   from scope in ScopeOrSingle(parser)
                    select new IfExpr(expr) { Scope = scope as Scope } as Expr;
 
         }

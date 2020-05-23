@@ -55,10 +55,11 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                     { typeof(FuncExpr), new FuncDefinitionGenerator(_instance) },
                     { typeof(RetExpr), new FuncReturnGenerator(_instance) },
                     { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
+                    { typeof(ForExpr), new ForGenerator(_instance) },
                     { typeof(IfElseExpr), new IfElseGenerator(_instance) },
                     { typeof(TernaryIfExpr), new IfElseGenerator(_instance) },
                     { typeof(LambdaExpr), new FuncDefinitionGenerator(_instance) },
-                    { typeof(Expr), new SingleExprGenerator(_instance) }
+                    { typeof(Expr), new SingleExprGenerator(_instance) },
                 };
 
                 return _instance;

@@ -6,8 +6,13 @@
         xmlns:local="clr-namespace:TinyLang.IDE"
         mc:Ignorable="d"
         Title="TinyLang IDE - Settings" Height="372" Width="429" Icon="/resources/img/Settings-icon.png" ResizeMode="NoResize">
-    <Grid Height="354" Background="GhostWhite">
-        <TreeView Name ="SettingsTree" Margin="10,36,285,47" Background="GhostWhite" SelectedItemChanged="TreeView_SelectedItemChanged">
+    <Grid Height="353" Background="GhostWhite">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="189*"/>
+            <RowDefinition Height="149*"/>
+            <RowDefinition Height="14*"/>
+        </Grid.RowDefinitions>
+        <TreeView Name ="SettingsTree" Margin="10,36,276,25" Background="GhostWhite" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.RowSpan="2">
             <TreeViewItem Header="General Settings">
                 <TreeViewItem Header="Exceptions"></TreeViewItem>
             </TreeViewItem>
@@ -34,7 +39,7 @@
                 </Style>
             </TreeView.ItemContainerStyle>
         </TreeView>
-        <TextBox Name="SearchTextBox" Text="Search..." TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" Margin="11,8,301,324" TextChanged="TextBox_TextChanged" GotFocus="TextBox_Focus" LostFocus="TextBox_LostFocus">
+        <TextBox Name="SearchTextBox" Text="Search..." TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" Margin="11,9,298,161" TextChanged="TextBox_TextChanged" GotFocus="TextBox_Focus" LostFocus="TextBox_LostFocus">
             <TextBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -44,9 +49,10 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <Grid Margin="158,36,10,10"/>
-        <local:ExceptionSettingsPage Margin="158,36,45,1" x:Name="ExceptionSettings" Visibility="Hidden"/>
-        <local:GeneralSettingsPage Margin="160,36,0,0" x:Name="GeneralSettings" Visibility="Visible"/>
-        <Label Name="SettingsLbl" Content="General Settings" Margin="158,4,10,320"/>
+        <Grid Margin="158,36,10,10" Grid.RowSpan="3"/>
+        <local:ExceptionSettingsPage Margin="158,36,-30,-56" x:Name="ExceptionSettings" Visibility="Hidden" Grid.RowSpan="3"/>
+        <local:GeneralSettingsPage Margin="160,36,-29,0" x:Name="GeneralSettings" Visibility="Visible" Grid.RowSpan="3"/>
+        <Label Name="SettingsLbl" Content="General Settings" Margin="234,5,10,156"/>
+        <Button Content="" Margin="117,8,276,162"/>
     </Grid>
 </Window>

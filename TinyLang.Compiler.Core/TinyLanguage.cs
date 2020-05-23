@@ -66,6 +66,12 @@ namespace TinyLang.Compiler.Core
             from exprSet in TokenParser.Braces(many(parser))
             select new Scope(exprSet.ToList()) as Expr;
 
+        public static Parser<Expr> ScopeOrSingle(Parser<Expr> parser) => either(Scope(parser), Single(parser));
+
+        public static Parser<Expr> Single(Parser<Expr> parser) => from s in optional(space)
+                                                                  from expr in parser
+                                                                  select new Scope(expr) as Expr;
+
         static TinyLanguage()
         {
             LanguageDef = Language.JavaStyle.With(ReservedOpNames: new Lst<string>(ReservedNames.All));

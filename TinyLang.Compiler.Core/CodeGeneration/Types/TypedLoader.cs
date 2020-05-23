@@ -112,6 +112,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
                 MulExpr _ => (OpCodes.Mul.EmitSingle(), typeof(int)),
                 DivExpr _ => (OpCodes.Div.EmitSingle(), typeof(int)),
                 EqExpr _ => (OpCodes.Ceq.EmitSingle(), typeof(bool)),
+                NotEqExpr _ => (EmitNotEq, typeof(bool)),
                 LessExpr _ => (OpCodes.Clt.EmitSingle(), typeof(bool)),
                 MoreExpr _ => (OpCodes.Cgt.EmitSingle(), typeof(bool)),
                 LessOrEqExpr _ => (OpCodes.Ceq.EmitOr(OpCodes.Clt, leftLoader, rightLoader), typeof(bool)),
@@ -121,6 +122,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             };
 
             return LoadWithOperation(leftLoader, rightLoader, type, () => operation(ilGenerator));
+        }
+
+        private static void EmitNotEq(ILGenerator il) 
+        {
+            il.Emit(OpCodes.Ceq);   
+            il.Emit(OpCodes.Not);
         }
 
         public static TypedLoader FromProperty(PropExpr prop, ILGenerator ilGenerator, CodeGenerationState state, ICodeGeneratorsFactory factory) 
@@ -167,7 +174,12 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromMethodScope(VarExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)
         {
-            if (state.Scope == CodeGenerationScope.Method)
+            if (state.Scope == CodeGenerationScope.Loop && expr.Name == "index")
+            {
+                return (typeof(int), () => ilGenerator?.Emit(OpCodes.Ldloc, state.LoopIndex));
+            }
+
+                if (state.Scope == CodeGenerationScope.Method)
             {
                 if (state.MethodArgs.TryGetValue(expr.Name, out var arg))
                 {

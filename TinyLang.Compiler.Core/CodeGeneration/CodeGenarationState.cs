@@ -14,7 +14,8 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         Assembly,
         Module,
         Type,
-        Method
+        Method,
+        Loop
     }
 
     public class CodeGenerationState
@@ -127,6 +128,25 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 MainVariables.Add(name, lb);
             }
 
+            return this;
+        }
+
+        public LocalBuilder LoopIndex { get; private set; }
+
+        private CodeGenerationScope _previousScope;
+
+        public CodeGenerationState StartLoop(LocalBuilder loopIndex)
+        {
+            _previousScope = Scope;
+            Scope = CodeGenerationScope.Loop;
+            LoopIndex = loopIndex;
+            return this;
+        }
+
+        public CodeGenerationState EndLoop()
+        {
+            Scope = _previousScope;
+            LoopIndex = null;
             return this;
         }
 

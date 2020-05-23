@@ -17,7 +17,9 @@ namespace TinyLang.IDE.Utils.SyntaxDefinition
             (ColorType.TypeDecalration, @":\s?([\w]+)"),
             (ColorType.TypeKeyword, "type "),
             (ColorType.ReturnKeyword, "return "),
-            (ColorType.NewKeyword, "new ")
+            (ColorType.NewKeyword, "new "),
+            (ColorType.TerminalKeyword, "to "),
+            (ColorType.TerminalKeyword, "step ")
         };
 
         public static HighlightingRuleSet GetHighlightingRuleSet(string name, IDictionary<ColorType, HighlightingColor> colorsCollection) 
