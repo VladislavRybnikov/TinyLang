@@ -12,6 +12,7 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperat
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.NumOperations;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.BoolOperations;
 using TinyLang.Compiler.Core.CodeGeneration.Utils;
+using TinyLang.Compiler.Core.Common.Exceptions.Base;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Types
 {
@@ -48,7 +49,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
             BinaryExpr bin => FromBinaryExpr(bin, ilGenerator, state, factory),
             TernaryIfExpr t => FromTernaryExpr(t, ilGenerator, state, factory),
             LambdaExpr l => FromLambda(l, ilGenerator, state, factory),
-            _ => throw new Exception("Unsupported variable type")
+            _ => throw new PositionedException(expr.Pos, "Unsupported variable type")
         };
 
         public static TypedLoader FromLambda(LambdaExpr lambda, ILGenerator ilGenerator,
@@ -174,12 +175,19 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Types
         public static TypedLoader FromMethodScope(VarExpr expr, ILGenerator ilGenerator,
             CodeGenerationState state)
         {
-            if (state.Scope == CodeGenerationScope.Loop && expr.Name == "index")
+            if (state.InnerScope == CodeGenerationScope.Loop)
             {
-                return (typeof(int), () => ilGenerator?.Emit(OpCodes.Ldloc, state.LoopIndex));
+                if (expr.Name == "index")
+                {
+                    return (typeof(int), () => ilGenerator?.Emit(OpCodes.Ldloc, state.DefaultLoopIndex));
+                }
+                else if(state.LoopIndexes.TryGetValue(expr.Name, out var index))
+                {
+                    return (typeof(int), () => ilGenerator?.Emit(OpCodes.Ldloc, index));
+                }
             }
 
-                if (state.Scope == CodeGenerationScope.Method)
+            if (state.Scope == CodeGenerationScope.Method)
             {
                 if (state.MethodArgs.TryGetValue(expr.Name, out var arg))
                 {

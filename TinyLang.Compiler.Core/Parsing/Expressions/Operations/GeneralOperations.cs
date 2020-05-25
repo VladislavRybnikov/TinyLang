@@ -1,4 +1,5 @@
 ﻿using System;
+using TinyLang.Compiler.Core.Common.Exceptions.Base;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
@@ -60,7 +61,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 
             public IfElseExpr ToIfElse()
             {
-                if (!(Then is ChooseExpr (var left, var right))) throw new Exception("invalidExpr");
+                if (!(Then is ChooseExpr (var left, var right))) throw new PositionedException(Then.Pos, "invalid expression");
 
                 var ifExpr = new IfExpr(Condition);
                 ifExpr.Scope = new Scope(left);

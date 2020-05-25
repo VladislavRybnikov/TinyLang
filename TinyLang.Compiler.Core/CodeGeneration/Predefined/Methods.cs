@@ -17,13 +17,31 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Predefined
 
             il.Emit(OpCodes.Ldarg_0);
 
-            var writeLineObj = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
+            var writeLineObj = typeof(Console).GetMethod("Write", BindingFlags.Public | BindingFlags.Static,
                 Type.DefaultBinder, new[] { typeof(object) }, null);
 
             il.EmitCall(OpCodes.Call, writeLineObj, new[] { typeof(object) });
             il.Emit(OpCodes.Ret);
 
             state.DefinedMethods.Add("print", print);
+        }
+
+        public static void AddPrintLine(CodeGenerationState state)
+        {
+            var print = state.ModuleBuilder.DefineGlobalMethod("println", MethodAttributes.Public | MethodAttributes.Static,
+                typeof(void), new[] { typeof(object) });
+
+            var il = print.GetILGenerator();
+
+            il.Emit(OpCodes.Ldarg_0);
+
+            var writeLineObj = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static,
+                Type.DefaultBinder, new[] { typeof(object) }, null);
+
+            il.EmitCall(OpCodes.Call, writeLineObj, new[] { typeof(object) });
+            il.Emit(OpCodes.Ret);
+
+            state.DefinedMethods.Add("println", print);
         }
 
         public static void AddPrintF(CodeGenerationState state) 
@@ -36,7 +54,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Predefined
             ilF.Emit(OpCodes.Ldarg_0);
             ilF.Emit(OpCodes.Ldarg_1);
 
-            var writeLineF = typeof(Console).GetMethod(nameof(Console.WriteLine), BindingFlags.Public | BindingFlags.Static,
+            var writeLineF = typeof(Console).GetMethod(nameof(Console.Write), BindingFlags.Public | BindingFlags.Static,
                 Type.DefaultBinder, new[] { typeof(string), typeof(object) }, null);
 
             ilF.EmitCall(OpCodes.Call, writeLineF, new[] { typeof(string), typeof(object) });

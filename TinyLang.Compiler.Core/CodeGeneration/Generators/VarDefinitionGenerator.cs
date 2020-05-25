@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection.Emit;
+using TinyLang.Compiler.Core.Common.Exceptions.Base;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
@@ -17,7 +18,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             {
                 CodeGenerationScope.Method => state.MethodBuilder.GetILGenerator(),
                 CodeGenerationScope.Module => state.MainMethodBuilder.GetILGenerator(),
-                _ => throw new Exception()
+                _ => throw new PositionedException(expression.Pos, "invalid scope")
             };
 
             // TODO: refactor to handle typed vars
@@ -61,7 +62,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             lb = null;
             if (name == "index" && state.Scope == CodeGenerationScope.Loop) 
             {
-                lb = state.LoopIndex;
+                lb = state.DefaultLoopIndex;
                 return true;
             }
 

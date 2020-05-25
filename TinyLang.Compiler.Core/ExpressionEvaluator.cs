@@ -6,6 +6,7 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.BoolOperation
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 using System.Collections.Concurrent;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperations;
+using TinyLang.Compiler.Core.Common.Exceptions.Base;
 
 namespace TinyLang.Compiler.Core
 {
@@ -43,7 +44,7 @@ namespace TinyLang.Compiler.Core
                 AssignExpr a => a.Assigment switch 
                 {
                     VarExpr av => Set(av.Name, Evaluate(a.Value).Value),
-                    _ => throw new Exception("Opertaion '=' is not allowed here")
+                    _ => throw new PositionedException(expr.Pos, "Opertaion '=' is not allowed here")
                 },
                 AddExpr add => Evaluate(add.Left).Value switch
                 {

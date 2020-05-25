@@ -4,6 +4,8 @@ using System.Reflection.Emit;
 using System.Text;
 using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
+using TinyLang.Compiler.Core.Parsing.Expressions.Operations;
+using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 {
@@ -24,7 +26,18 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             var startLabel = il.DefineLabel();
             var checkLabel = il.DefineLabel();
 
-            var (startType, startEmitLoad) = ValueLoader(expression.Start, il, state);
+            var start = expression.Start;
+            string loopIndexName = null;
+
+            if (expression.Start is AssignExpr assignExpr)
+            {
+                if (assignExpr.Assigment is VarExpr v)
+                {
+                    loopIndexName = v.Name;
+                }
+                start = assignExpr.Value;
+            }
+            var (startType, startEmitLoad) = ValueLoader(start, il, state);
             var (endType, endEmitLoad) = ValueLoader(expression.End, il, state);
             var (stepType, stepEmitLoad) = ValueLoader(expression.Step, il, state);
 
@@ -44,7 +57,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
             il.Emit(OpCodes.Brfalse, endLabel);
 
             il.MarkLabel(startLabel);
-            state.StartLoop(lb);
+            state.StartLoop(lb, loopIndexName);
             LoadScope(expression.Scope, state);
             il.Emit(OpCodes.Ldloc, lb);
             stepEmitLoad();
@@ -54,7 +67,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 
             il.MarkLabel(endLabel);
             il.Emit(OpCodes.Nop);
-            state.EndLoop();
+            state.EndLoop(loopIndexName);
 
             return state;
         }

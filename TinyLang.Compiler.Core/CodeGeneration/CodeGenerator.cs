@@ -26,7 +26,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
         }
 
         protected virtual TExpr Typed(Expr expr) => expr is TExpr typed ? typed
-                : throw new ExprTypeMismatchException(typeof(TExpr), expr.GetType());
+                : throw new ExprTypeMismatchException(typeof(TExpr), expr.GetType(), expr.Pos);
 
         protected internal abstract CodeGenerationState GenerateInternal(TExpr expression, CodeGenerationState state);
 

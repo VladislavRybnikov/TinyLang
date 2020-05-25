@@ -54,6 +54,7 @@ namespace TinyLang.Compiler.Core.CodeGeneration
                 typeof(void), new Type[0]);
 
             Methods.AddPrint(state);
+            Methods.AddPrintLine(state);
             Methods.AddPrintF(state);
             return state;
         }
@@ -131,22 +132,36 @@ namespace TinyLang.Compiler.Core.CodeGeneration
             return this;
         }
 
-        public LocalBuilder LoopIndex { get; private set; }
+        public LocalBuilder DefaultLoopIndex { get; private set; }
+        public Dictionary<string, LocalBuilder> LoopIndexes { get; private set; } = new Dictionary<string, LocalBuilder>();
 
-        private CodeGenerationScope _previousScope;
+        public CodeGenerationScope InnerScope { get; private set; }
 
-        public CodeGenerationState StartLoop(LocalBuilder loopIndex)
+        public CodeGenerationState StartLoop(LocalBuilder loopIndex, string loopIndexName)
         {
-            _previousScope = Scope;
-            Scope = CodeGenerationScope.Loop;
-            LoopIndex = loopIndex;
+            InnerScope = CodeGenerationScope.Loop;
+            if (loopIndexName == null)
+            {
+                DefaultLoopIndex = loopIndex;
+            }
+            else 
+            {
+                LoopIndexes.Add(loopIndexName, loopIndex);
+            }
             return this;
         }
 
-        public CodeGenerationState EndLoop()
+        public CodeGenerationState EndLoop(string loopIndexName)
         {
-            Scope = _previousScope;
-            LoopIndex = null;
+            InnerScope = Scope;
+            if (loopIndexName == null)
+            {
+                DefaultLoopIndex = null;
+            }
+            else
+            {
+                LoopIndexes.Remove(loopIndexName);
+            }
             return this;
         }
 
