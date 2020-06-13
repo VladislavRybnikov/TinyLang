@@ -8,11 +8,11 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
     public class FuncExpr : Expr
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public IEnumerable<TypedVar> Args { get; }
+        public IEnumerable<TypedVar> Args { get; set; }
 
-        public Scope Body { get; }
+        public Scope Body { get; set; }
 
         public static Expr Define(string name, Option<TypeExpr> type, IEnumerable<TypedVar> args, Scope body) =>
             type.Match(
@@ -31,6 +31,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
             Body = body;
         }
 
+        public FuncExpr()
+        {
+        }
+
         public override string ToString()
         {
             return $"Func(\nName({Name}), \nArgs({string.Join(", ", Args)}), \nBody({Body}))";
@@ -39,11 +43,15 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class TypedFuncExpr : FuncExpr
     {
-        public TypeExpr Type { get; }
+        public TypeExpr Type { get; set; }
 
         public TypedFuncExpr(string name, TypeExpr type, IEnumerable<TypedVar> args, Scope body) : base(name, args, body)
         {
             Type = type;
+        }
+
+        public TypedFuncExpr()
+        {
         }
 
         public override string ToString()
@@ -54,9 +62,9 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class FuncInvocationExpr : Expr
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public IEnumerable<Expr> Args { get; }
+        public IEnumerable<Expr> Args { get; set; }
 
         public FuncInvocationExpr(string name, IEnumerable<Expr> args)
         {
@@ -72,11 +80,15 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class RetExpr : Expr
     {
-        public Expr Expr { get; }
+        public Expr Expr { get; set; }
 
         public RetExpr(Expr expr)
         {
             Expr = expr;
+        }
+
+        public RetExpr()
+        {
         }
 
         public override string ToString()

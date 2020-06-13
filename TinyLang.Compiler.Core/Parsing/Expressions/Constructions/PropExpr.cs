@@ -10,6 +10,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
         public Expr Expr;
         public string Prop;
 
+        public PropExpr()
+        {
+        }
+
         public PropExpr(Expr expr, string prop) 
         {
             Expr = expr;

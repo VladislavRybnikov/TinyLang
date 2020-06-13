@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <avalonedit:TextEditor x:Name="txtBx1" HorizontalAlignment="Center" Height="AUTO" VerticalAlignment="Top" Width="492" BorderBrush="Black" 
-                               ShowLineNumbers="True" BorderThickness="1" Grid.Row="1" Grid.RowSpan="2"/>
+                               ShowLineNumbers="True" BorderThickness="1" Grid.Row="1" Grid.RowSpan="2" TextChanged="txtBx1_TextChanged"/>
         <TreeView x:Name="tv1" FontSize="12" HorizontalAlignment="Left" Height="164"  VerticalAlignment="Top" Width="224" BorderBrush="Black" Grid.Row="1" Grid.Column="1" RenderTransformOrigin="0.514,0.52" Margin="12,29,0,0" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <TextBox x:Name="txtBx2" HorizontalAlignment="Left" Height="98" Grid.Row="2" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="226" BorderBrush="Black" AcceptsReturn="True" RenderTransformOrigin="0.501,0.216" Margin="10,177,0,0" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="AST Viwer" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Foreground="DarkSlateGray" Grid.Row="1" Grid.Column="2" Margin="25,0,0,0" ToolTip="Shows generated AST"/>
@@ -38,7 +38,7 @@
         <Button Content="clear" Grid.Column="2" HorizontalAlignment="Left" Margin="187,151,0,0" Grid.Row="2" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal" Click="Button_Click_1"/>
         <Menu Grid.ColumnSpan="3" Margin="0,0,10,39">
             <MenuItem Header="File">
-                <MenuItem Header="Open"></MenuItem>
+                <MenuItem Header="Open" Click="MenuItem_Click_3"></MenuItem>
                 <MenuItem Header="Save (Ctrl+S)"></MenuItem>
                 <MenuItem Header="Recent Files"></MenuItem>
             </MenuItem>
@@ -84,13 +84,14 @@
             </Grid.ColumnDefinitions>
 
             <Image Grid.Column="0" Source="/resources/img/file-png-vettoriale.png" Margin="0,2,0,2" Width="16" Height="16"/>
-            <Label x:Name="FileNameLbl" Content="Untitled.tl*" Margin="0,-3,-56,0" Grid.ColumnSpan="5" Grid.Column="1" />
+            <Label x:Name="FileNameLbl" Content="Untitled.tl*" Margin="0,-3,0,0" Grid.ColumnSpan="5" Grid.Column="1" HorizontalAlignment="Left" Width="150" />
         </Grid>
-        <ComboBox Margin="421,46,26,1" Height="25">
+        <ComboBox Name="SyntaxCmb" Margin="421,46,26,1" Height="25" SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem Content="TinyLang" IsSelected="True"/>
             <ComboBoxItem Content="JSON"/>
-            
+
         </ComboBox>
         <Label Content="Text format:" HorizontalAlignment="Left" Margin="344,43,0,0" VerticalAlignment="Top" Width="72" Grid.RowSpan="2"/>
+        <Button Name="exportAstBtn"  Content="export" Grid.Column="2" HorizontalAlignment="Left" Margin="145,4,0,0" Grid.Row="1" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontStyle="Normal" RenderTransformOrigin="-0.862,0.377" Click="exportAstBtn_Click"/>
     </Grid>
 </Window>

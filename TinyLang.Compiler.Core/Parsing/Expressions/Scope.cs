@@ -6,7 +6,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 {
     public class Scope : Expr
     {
-        public List<Expr> Statements { get; }
+        public List<Expr> Statements { get; set; }
 
         public Scope(List<Expr> statements) 
         {

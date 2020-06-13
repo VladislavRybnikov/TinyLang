@@ -1,0 +1,1 @@
+for(0 to 10) print(index)

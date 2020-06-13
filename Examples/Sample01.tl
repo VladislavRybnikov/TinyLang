@@ -33,4 +33,14 @@ type User(name: str, type: str)
 	static Empty = new User("", "")
 }
 
+// ADT
 
+type User = 
+	Simple: (Age: int * Name: string) |
+	Admin: ()
+
+arr = User[10]
+
+arr = int[10]
+
+arr[0] = 1

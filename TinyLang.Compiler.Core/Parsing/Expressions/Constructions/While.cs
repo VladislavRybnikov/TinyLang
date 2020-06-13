@@ -6,11 +6,15 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
     public class WhileExpr : ScopedExpr
     {
-        Expr Predicate { get; }
+        Expr Predicate { get; set; }
 
         public WhileExpr(Expr predicate)
         {
             Predicate = predicate;
+        }
+
+        public WhileExpr()
+        {
         }
 
         public override string ToString()
@@ -21,11 +25,15 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class DoWhileExpr : ScopedExpr
     {
-        Expr Predicate { get; }
+        Expr Predicate { get; set; }
 
         public DoWhileExpr(Expr predicate)
         {
             Predicate = predicate;
+        }
+
+        public DoWhileExpr()
+        {
         }
 
         public override string ToString()

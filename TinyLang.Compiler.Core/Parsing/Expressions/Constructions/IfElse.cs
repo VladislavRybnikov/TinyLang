@@ -7,8 +7,8 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
     public class IfElseExpr : Expr
     {
-        public IfExpr If { get; }
-        public IEnumerable<ElifExpr> Elifs { get; }
+        public IfExpr If { get; set; }
+        public IEnumerable<ElifExpr> Elifs { get; set; }
         public ElseExpr Else { get; }
 
         public IfElseExpr(IfExpr @if, IEnumerable<ElifExpr> elifs = null, ElseExpr @else = null)
@@ -16,6 +16,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
             If = @if;
             Elifs = elifs ?? Enumerable.Empty<ElifExpr>();
             Else = @else;
+        }
+
+        public IfElseExpr()
+        {
         }
 
         public override string ToString()
@@ -28,10 +32,14 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
     }
     public class IfExpr : ScopedExpr
     {
-        public Expr Predicate { get; }
+        public Expr Predicate { get; set; }
         public IfExpr(Expr predicate)
         {
             Predicate = predicate;
+        }
+
+        public IfExpr()
+        {
         }
 
         public override string ToString()
@@ -41,10 +49,14 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
     }
     public class ElifExpr : ScopedExpr
     {
-        public Expr Predicate { get; }
+        public Expr Predicate { get; set; }
         public ElifExpr(Expr predicate)
         {
             Predicate = predicate;
+        }
+
+        public ElifExpr()
+        {
         }
 
         public override string ToString()
@@ -55,6 +67,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class ElseExpr : ScopedExpr
     {
+        public ElseExpr()
+        {
+        }
+
         public override string ToString()
         {
             return $"Else({Scope})";

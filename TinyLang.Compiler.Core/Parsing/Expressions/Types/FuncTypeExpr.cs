@@ -7,14 +7,18 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
 {
     public class FuncTypeExpr : TypeExpr
     {
-        public IEnumerable<TypeExpr> ArgsTypes { get; }
-        public TypeExpr ReturnType { get; }
+        public IEnumerable<TypeExpr> ArgsTypes { get; set; }
+        public TypeExpr ReturnType { get; set; }
 
         public FuncTypeExpr(IEnumerable<TypeExpr> argsTypes, TypeExpr returnType)  
             : base(TypeName(argsTypes, returnType))
         {
             ArgsTypes = argsTypes;
             ReturnType = returnType;
+        }
+
+        public FuncTypeExpr()
+        {
         }
 
         private static string TypeName(IEnumerable<TypeExpr> argsTypes, TypeExpr returnType) 

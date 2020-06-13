@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using TinyLang.Compiler.Core;
 using TinyLang.Compiler.Core.CodeGeneration;
+using TinyLang.Compiler.Core.JSON;
 using TinyLang.Compiler.Core.Parsing;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
@@ -78,6 +83,15 @@ namespace TinyLang.Fluent
             return self;
         }
 
+        private string _ast;
+
+        public static ITinyLangEngine FromAST(string ast)
+        {
+            var self = new TinyLangEngine();
+            self._ast = ast;
+            return self;
+        }
+
         public ITinyLangEngine DefineType(string name, Dictionary<string, string> args)
         {
             var typeDefinition = new RecordExpr(name, args.Select(kv => new TypedVar(kv.Key, kv.Value)));
@@ -113,7 +127,13 @@ namespace TinyLang.Fluent
 
         public void Execute(out AST ast)
         {
-            ast = ASTBuilder.Build();
+            if(_ast != null) 
+            {
+                var jobj = JsonConvert.DeserializeObject<JObject>(_ast);
+
+                ast = new AST(jobj["Statements"].ToObject<Expr[]>());
+            }
+            else ast = ASTBuilder.Build();
 
             var res = TinyCompiler.Create(ASTBuilder,
                 CodeGeneratorsFactory.Instance)

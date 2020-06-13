@@ -14,6 +14,15 @@ using TinyLang.IDE.Utils.Extensions;
 
 namespace TinyLang.IDE.Services.ScriptRunning
 {
+    public enum SyntaxType { TinyLang, Json }
+
+    public class Code
+    {
+        public SyntaxType SyntaxType { get; set; }
+
+        public string Value { get; set; }
+    }
+
     public class CompilationError : EventArgs 
     {
         public int ErrorCode { get; set; }
@@ -22,17 +31,18 @@ namespace TinyLang.IDE.Services.ScriptRunning
         public int Column { get; set; }
     }
 
-    public interface IScriptRunProcessor : IProcessor<string, AST>
+    public interface IScriptRunProcessor : IProcessor<Code, AST>
     {
         TextBoxBase OutputTextBox { get; set; }
         TreeView ASTTreeView { get; set; }
+        AST AST { get; set; }
 
         void AddTreeViewEnricher(IEnricher<TreeViewItem> enricher);
 
         IObservable<CompilationError> CompilationErrorOccured { get; }
     }
 
-    public class ScriptRunProcessor : BaseProcessor<string, AST>, IScriptRunProcessor
+    public class ScriptRunProcessor : BaseProcessor<Code, AST>, IScriptRunProcessor
     {
         private TextBoxBase _outputTextBox;
         private TreeView _astTreeView;
@@ -53,16 +63,20 @@ namespace TinyLang.IDE.Services.ScriptRunning
             set => SetASTTreeView(value); 
         }
 
+        public AST AST { get; set; }
+
         public void AddTreeViewEnricher(IEnricher<TreeViewItem> enricher) => _treeViewEnrichers.Add(enricher);
 
-        public override AST Process(string val)
+        public override AST Process(Code val)
         {
             try
             {
-                using var engine = TinyLangEngine
-                       .FromScript(val);
+                using var engine = val.SyntaxType == SyntaxType.TinyLang 
+                    ? TinyLangEngine.FromScript(val.Value) 
+                    : TinyLangEngine.FromAST(val.Value);
 
                 engine.Execute(out var ast);
+                AST = ast;
                 return ast;
             }
             catch (Exception ex)

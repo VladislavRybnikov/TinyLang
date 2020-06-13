@@ -1,7 +1,11 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using TinyLang.Compiler.Core.Common.Exceptions.Base;
@@ -20,13 +24,14 @@ namespace TinyLang.IDE
         private ITextMarkerService _textMarkerService;
         private ILineChangeTracker _lineTracker;
         private IScriptRunProcessor _scriptRunProcessor;
+        private FileInfo _currentFile;
+        private string _text;
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeRunComponents();
             InitializeAnalyzeComponents();
-
         }
 
         private void InitializeRunComponents() 
@@ -39,7 +44,7 @@ namespace TinyLang.IDE
 
             _scriptRunProcessor.AddTreeViewEnricher(new TreeViewIconEnricher());
             _scriptRunProcessor.CompilationErrorOccured.Subscribe(er 
-                => MessageBox.Show(er.Message, "Compilation error", MessageBoxButton.OK, MessageBoxImage.Error));
+                => System.Windows.MessageBox.Show(er.Message, "Compilation error", MessageBoxButton.OK, MessageBoxImage.Error));
 
             var runRequested = Observable.Merge(new []
             {
@@ -49,9 +54,41 @@ namespace TinyLang.IDE
                     .Where(_ => Keyboard.Modifiers == ModifierKeys.Control && Keyboard.IsKeyDown(Key.F5))
             });
 
-            
+            var saveRequested = Observable.Merge(new[]
+            {
+                Observable.FromEventPattern(this, nameof(KeyDown))
+                    .Where(_ => Keyboard.Modifiers == ModifierKeys.Control && Keyboard.IsKeyDown(Key.S))
+            });
+
+            saveRequested.Select(_ => _currentFile)
+                .Subscribe(file =>
+                {
+                    _text = txtBx1.Text;
+                    if (file != null)
+                    {
+                        File.WriteAllText(file.FullName, txtBx1.Text);
+                    }
+                    else 
+                    {
+                        using var saveDialog = new SaveFileDialog
+                        {
+                            Filter = _syntaxType == SyntaxType.Json ? "JSON|*.json" : "TinyLang|*.tl",                            AddExtension = true,
+                            InitialDirectory = Directory.GetCurrentDirectory()
+                        };
+
+                        if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            _currentFile = new FileInfo(saveDialog.FileName);
+
+                            File.WriteAllText(saveDialog.FileName, txtBx1.Text);
+                        }
+                    }
+                    FileNameLbl.Content = _currentFile.Name;
+                });
+
             runRequested.Select(_  => txtBx1.Text)
                 .SubscribeOnDispatcher()
+                .Select(txt => new Code { Value = txt, SyntaxType = _syntaxType })
                 .Subscribe(_scriptRunProcessor);
         }
 
@@ -70,7 +107,7 @@ namespace TinyLang.IDE
             _lineTracker.AddTo(txtBx1.Document.LineTrackers);
 
             _lineTracker.DocumentLineChanges.Subscribe(OnLineChange);
-            ParseErrors.Subscribe(OnParseError);
+            //ParseErrors.Subscribe(OnParseError);
 
         }
 
@@ -130,6 +167,72 @@ namespace TinyLang.IDE
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             txtBx2.Clear();
+        }
+
+        private SyntaxType _syntaxType;
+        private IHighlightingDefinition _tinyLangHighlighting = new TinyLangDefinition();
+        private IHighlightingDefinition _jsonHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".js");
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _syntaxType = Enum.Parse<SyntaxType>((SyntaxCmb.SelectedItem as ComboBoxItem).Content.ToString(), true);
+
+            txtBx1.SyntaxHighlighting = _syntaxType switch
+            {
+                SyntaxType.TinyLang => _tinyLangHighlighting,
+                SyntaxType.Json => _jsonHighlighting,
+                _ => null
+            };
+        }
+
+        private void exportAstBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (_scriptRunProcessor.AST != null)
+            {
+                using var saveDialog = new SaveFileDialog
+                {
+                    DefaultExt = ".json",
+                    AddExtension = true,
+                    InitialDirectory = Directory.GetCurrentDirectory()
+                };
+
+                if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    File.WriteAllText(saveDialog.FileName, JsonConvert.SerializeObject(_scriptRunProcessor.AST, 
+                        Formatting.Indented));
+                }
+            }
+            else 
+            {
+                System.Windows.MessageBox
+                    .Show("Error", "Empty AST. Nothing to import.",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            using var openFile = new OpenFileDialog
+            {
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                Filter = "TinyLang|*.tl|JSON|*.json"
+            };
+
+            if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK) 
+            {
+                _currentFile = new FileInfo(openFile.FileName);
+                FileNameLbl.Content = _currentFile.Name;
+                SyntaxCmb.SelectedIndex = Convert.ToInt32(_currentFile.Extension == ".json"); 
+                txtBx1.Text = File.ReadAllText(openFile.FileName);
+            }
+        }
+
+        private void txtBx1_TextChanged(object sender, EventArgs e)
+        {
+            if (_text != null && !_text.Equals(txtBx1.Text)) 
+            {
+                FileNameLbl.Content = !_text.Equals(txtBx1.Text) ? _currentFile.Name + "*" : _currentFile.Name;
+            }
         }
     }
 }

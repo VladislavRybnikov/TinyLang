@@ -10,11 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D447A1FD-E851-4171-A574-FEC6B62BE548}"
 	ProjectSection(SolutionItems) = preProject
 		Examples\Sample01.tl = Examples\Sample01.tl
+		Test.tl = Test.tl
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyLang.Fluent", "TinyLang.Fluent\TinyLang.Fluent.csproj", "{7876D21E-4F03-4DD9-9A42-D637120AB3B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyLang.IDE", "TinyLang.IDE\TinyLang.IDE.csproj", "{3531D28B-2E8F-4375-A3EA-42974B5823CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyLang.IDE", "TinyLang.IDE\TinyLang.IDE.csproj", "{3531D28B-2E8F-4375-A3EA-42974B5823CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

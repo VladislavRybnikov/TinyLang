@@ -1,0 +1,94 @@
+{
+  "NodeType": null,
+  "Length": 3,
+  "Pos": {
+    "Line": 0,
+    "Column": 0
+  },
+  "Statements": [
+    {
+      "NodeType": "Record",
+      "Name": "User",
+      "Props": [
+        {
+          "NodeType": "TypedVar",
+          "Type": {
+            "NodeType": "Type",
+            "Name": "str",
+            "Pos": {
+              "Line": 0,
+              "Column": 0
+            }
+          },
+          "Var": {
+            "NodeType": "Var",
+            "Name": "name",
+            "Pos": {
+              "Line": 0,
+              "Column": 0
+            }
+          },
+          "Pos": {
+            "Line": 0,
+            "Column": 19
+          }
+        }
+      ],
+      "Pos": {
+        "Line": 0,
+        "Column": 0
+      }
+    },
+    {
+      "NodeType": "Assign",
+      "Assigment": {
+        "NodeType": "Var",
+        "Name": "u",
+        "Pos": {
+          "Line": 2,
+          "Column": 0
+        }
+      },
+      "Value": {
+        "NodeType": "RecordCreation",
+        "Name": "User",
+        "Props": [
+          {
+            "NodeType": "Str",
+            "Value": "Vlad",
+            "Pos": {
+              "Line": 2,
+              "Column": 13
+            }
+          }
+        ],
+        "Pos": {
+          "Line": 2,
+          "Column": 4
+        }
+      },
+      "Pos": {
+        "Line": 0,
+        "Column": 0
+      }
+    },
+    {
+      "NodeType": "FuncInvocation",
+      "Name": "print",
+      "Args": [
+        {
+          "NodeType": "Var",
+          "Name": "u",
+          "Pos": {
+            "Line": 3,
+            "Column": 6
+          }
+        }
+      ],
+      "Pos": {
+        "Line": 3,
+        "Column": 0
+      }
+    }
+  ]
+}

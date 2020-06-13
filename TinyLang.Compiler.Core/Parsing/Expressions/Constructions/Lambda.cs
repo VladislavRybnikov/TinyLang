@@ -9,12 +9,16 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
     {
         public IEnumerable<TypedVar> Args { get; }
 
-        public Expr Expr { get; }
+        public Expr Expr { get; set; }
 
         public LambdaExpr(IEnumerable<TypedVar> args, Expr expr) 
         {
             Args = args;
             Expr = expr;
+        }
+
+        public LambdaExpr()
+        {
         }
 
         public FuncExpr ToFunc()

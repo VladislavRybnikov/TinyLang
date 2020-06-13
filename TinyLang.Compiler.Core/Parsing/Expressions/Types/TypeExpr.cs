@@ -7,11 +7,15 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
 {
     public class TypeExpr : Expr
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
         public TypeExpr(string typeName)
         {
             Name = typeName;
+        }
+
+        public TypeExpr()
+        {
         }
 
         public override string ToString()
@@ -22,9 +26,9 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
 
     public class TypedVar : Expr
     {
-        public TypeExpr Type { get; }
+        public TypeExpr Type { get; set; }
 
-        public GeneralOperations.VarExpr Var { get; }
+        public GeneralOperations.VarExpr Var { get; set; }
 
         public TypedVar(string name, string type) : this(new GeneralOperations.VarExpr(name), type)
         {
@@ -41,6 +45,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Types
         {
             Var = var;
             Type = new TypeExpr(typeName);
+        }
+
+        public TypedVar()
+        {
         }
 
         public override string ToString()

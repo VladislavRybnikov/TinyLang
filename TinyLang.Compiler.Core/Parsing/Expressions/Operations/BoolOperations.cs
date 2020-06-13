@@ -4,6 +4,10 @@
     {
         public class AndExpr : BinaryExpr
         {
+            public AndExpr()
+            {
+            }
+
             public AndExpr(Expr left, Expr right) : base(left, right){ }
 
             public override string Op => "&&";
@@ -11,6 +15,10 @@
 
         public class OrExpr : BinaryExpr
         {
+            public OrExpr()
+            {
+            }
+
             public OrExpr(Expr left, Expr right) : base(left, right){ }
 
             public override string Op => "||";
@@ -20,11 +28,15 @@
         {
             public string Op => "!";
 
-            public Expr Value { get; }
+            public Expr Value { get; set; }
 
             public NotExpr(Expr value)
             {
                 Value = value;
+            }
+
+            public NotExpr()
+            {
             }
 
             public override string ToString()

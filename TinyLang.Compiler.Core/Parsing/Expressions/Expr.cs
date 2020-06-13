@@ -5,6 +5,7 @@ using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperat
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.CompareOperations;
 using Newtonsoft.Json;
 using LanguageExt.Parsec;
+using TinyLang.Compiler.Core.JSON;
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions
 {
@@ -21,14 +22,21 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
 
         public Position(Pos pos) : this(pos.Line, pos.Column) { }
 
+        public Position()
+        {
+        }
+
         public override string ToString()
         {
             return $"{{ line: {Line}, column: {Column} }}";
         }
     }
 
+    [JsonConverter(typeof(ExprConverter))]
     public abstract class Expr
     {
+        public Expr() { }
+
         [JsonProperty(Order = -2)]
         public virtual string NodeType => GetType().Name.Replace(nameof(Expr), string.Empty);
 

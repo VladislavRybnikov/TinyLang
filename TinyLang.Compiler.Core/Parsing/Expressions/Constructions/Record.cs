@@ -7,14 +7,18 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
     public class RecordExpr : Expr
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public IEnumerable<TypedVar> Props { get; }
+        public IEnumerable<TypedVar> Props { get; set; }
 
         public RecordExpr(string name, IEnumerable<TypedVar> props)
         {
             Name = name;
             Props = props;
+        }
+
+        public RecordExpr()
+        {
         }
 
         public static Expr Define(string name, IEnumerable<TypedVar> props) => new RecordExpr(name, props);
@@ -29,13 +33,17 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class RecordCreationExpr : Expr
     {
-        public string Name { get; }
-        public IEnumerable<Expr> Props { get; }
+        public string Name { get; set; }
+        public IEnumerable<Expr> Props { get; set; }
 
         public RecordCreationExpr(string name, IEnumerable<Expr> props)
         {
             Name = name;
             Props = props;
+        }
+
+        public RecordCreationExpr()
+        {
         }
 
         public override string ToString()

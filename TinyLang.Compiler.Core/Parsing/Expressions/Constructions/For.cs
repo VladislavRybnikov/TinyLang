@@ -9,6 +9,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 {
     public class ForExpr : ScopedExpr
     {
+        public ForExpr()
+        {
+        }
+
         public Expr Start { get; set; }
 
         public Expr End { get; set; }
@@ -29,6 +33,10 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions.Constructions
 
     public class ForEachExpr : ScopedExpr
     {
+        public ForEachExpr()
+        {
+        }
+
         public GeneralOperations.VarExpr Each { get; set; }
 
         public GeneralOperations.VarExpr Set { get; set; }

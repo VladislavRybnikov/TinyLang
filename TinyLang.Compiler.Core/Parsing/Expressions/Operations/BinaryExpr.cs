@@ -2,18 +2,22 @@
 
 namespace TinyLang.Compiler.Core.Parsing.Expressions.Operations
 {
-    public abstract class BinaryExpr : Expr
+    public class BinaryExpr : Expr
     {
         [JsonProperty(Order = -1)]
-        public abstract string Op { get; }
+        public virtual string Op { get; set; }
 
-        public Expr Right { get; }
-        public Expr Left { get; }
+        public Expr Right { get; set; }
+        public Expr Left { get; set; }
 
         public BinaryExpr(Expr left, Expr right)
         {
             Right = right;
             Left = left;
+        }
+
+        public BinaryExpr()
+        {
         }
 
         public override string ToString()

@@ -9,7 +9,7 @@ namespace TinyLang.Compiler.Core.Parsing.Expressions
     [JsonObject]
     public sealed class AST : Expr, IEnumerable<Expr>
     {
-        [JsonProperty(Order=2)]
+        [JsonProperty(Order = 2)]
         public Expr[] Statements { get; }
 
         public override string NodeType => null;
