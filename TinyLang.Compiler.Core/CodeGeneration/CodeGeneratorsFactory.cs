@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TinyLang.Compiler.Core.CodeGeneration.Generators;
+using TinyLang.Compiler.Core.Common.Attributes;
 using TinyLang.Compiler.Core.Common.Exceptions;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
@@ -47,24 +50,34 @@ namespace TinyLang.Compiler.Core.CodeGeneration
 
                 _instance = new CodeGeneratorsFactory();
 
-                _instance._genartors = new Dictionary<Type, ICodeGenerator>
-                {
-                    { typeof(AssignExpr), new VarDefinitionGenerator(_instance) },
-                    { typeof(RecordExpr), new RecordDefinitionGenerator(_instance) },
-                    { typeof(FuncInvocationExpr), new FuncCallGenerator(_instance) },
-                    { typeof(FuncExpr), new FuncDefinitionGenerator(_instance) },
-                    { typeof(RetExpr), new FuncReturnGenerator(_instance) },
-                    { typeof(RecordCreationExpr), new RecordCreationGenerator(_instance) },
-                    { typeof(ForExpr), new ForGenerator(_instance) },
-                    { typeof(IfElseExpr), new IfElseGenerator(_instance) },
-                    { typeof(TernaryIfExpr), new IfElseGenerator(_instance) },
-                    { typeof(LambdaExpr), new FuncDefinitionGenerator(_instance) },
-                    { typeof(Expr), new SingleExprGenerator(_instance) },
-                };
+                _instance._genartors = Assembly.GetExecutingAssembly().GetTypes()
+                    .Where(t => typeof(ICodeGenerator).IsAssignableFrom(t) && !t.IsAbstract)
+                    .SelectMany(t => GetGeneratorMappings(t))
+                    .ToDictionary(key => key.Item1, value => value.Item2);
 
                 return _instance;
             }
         }
+
+        private static IEnumerable<(Type, ICodeGenerator)> GetGeneratorMappings(Type generatorType) 
+        {
+            if (generatorType.GetCustomAttributes<SkipGeneratorAttribute>().Any()) yield break; 
+
+            var genericAttrType = generatorType.BaseType.GetGenericArguments()[0];
+
+            yield return (genericAttrType, New(generatorType));
+
+            foreach (var type in generatorType
+                .GetCustomAttributes<ApplicableForAttribute>()
+                .Select(attr => attr.Type)) 
+            {
+                if (type != genericAttrType) yield return (type, New(generatorType));
+            }
+        }
+
+        private static ICodeGenerator New(Type generatorType) => 
+            generatorType.GetConstructor(new Type[] { typeof(ICodeGeneratorsFactory) })
+                    .Invoke(new object[] { _instance }) as ICodeGenerator;
     }
 
 }

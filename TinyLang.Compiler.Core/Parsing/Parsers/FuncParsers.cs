@@ -8,9 +8,29 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
 using static TinyLang.Compiler.Core.TinyLanguage;
 using System.Collections.Generic;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
+using TinyLang.Compiler.Core.Common.Attributes;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
+    [ParserOrder(3)]
+    public class LambdaParser : IValueParser 
+    { 
+        public Parser<Expr> Parse(Parser<Expr> parser) => FuncParsers.Lambda(parser);
+    }
+     
+    [ParserOrder(2)]
+    public class FuncInvocationParser : IValueParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => FuncParsers.FuncInvocation(parser);
+    }
+
+    [ParserOrder(5)]
+    public class FuncDefinitionParser : IActionParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => FuncParsers.FuncDefinition(parser);
+    }
+
     public static class FuncParsers
     {
         public static Parser<TypeExpr> FuncType()

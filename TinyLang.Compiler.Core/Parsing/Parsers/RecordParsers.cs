@@ -6,9 +6,17 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static TinyLang.Compiler.Core.TinyLanguage;
 using static LanguageExt.Parsec.Char;
 using static LanguageExt.Parsec.Prim;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
+using TinyLang.Compiler.Core.Common.Attributes;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
+    [ParserOrder(4)]
+    public class RecordCreationParser : IValueParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => RecordParsers.RecordCreation(parser);
+    }
+
     public static class RecordParsers
     {
         public static Parser<Expr> Records()
@@ -39,7 +47,13 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                    attempt(FuncParsers.FuncInvocation(parser)), VarParser)
                    from dot in TokenParser.Dot
                    from p in IdentifierParser
-                   select new PropExpr(e, p) as Expr;
+                   select (new PropExpr(e, p) as Expr);
         }
+    }
+
+    [ParserOrder(1)]
+    public class PropParser : IValueParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => RecordParsers.PropGetter(parser);
     }
 }

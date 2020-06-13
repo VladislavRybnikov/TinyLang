@@ -7,10 +7,13 @@ using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using static TinyLang.Compiler.Core.TinyLanguage;
 using static TinyLang.Compiler.Core.Parsing.Expressions.Operations.GeneralOperations;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
+using TinyLang.Compiler.Core.Common.Attributes;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
-    public static class IfElseParsers
+    [ParserOrder(1)]
+    public class IfElseParsers : IActionParser
     {
         public static Parser<Expr> Ternary(Parser<Expr> parser) 
         {
@@ -71,5 +74,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                 Some: some => new IfElseExpr(@if as IfExpr, elifs.Cast<ElifExpr>().AsEnumerable(), some as ElseExpr),
                 None: () => new IfElseExpr(@if as IfExpr, elifs.Cast<ElifExpr>().AsEnumerable())
             );
+
+        public Parser<Expr> Parse(Parser<Expr> parser) => IfElse(parser);   
     }
 }

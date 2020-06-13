@@ -2,11 +2,13 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using TinyLang.Compiler.Core.CodeGeneration.Types;
+using TinyLang.Compiler.Core.Common.Attributes;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 
 namespace TinyLang.Compiler.Core.CodeGeneration.Generators
 {
+    [ApplicableFor(typeof(LambdaExpr))]
     public class FuncDefinitionGenerator : CodeGenerator<FuncExpr>
     {
         private bool _anonymous;

@@ -8,9 +8,23 @@ using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static LanguageExt.Parsec.Prim;
 using static LanguageExt.Parsec.Char;
 using static TinyLang.Compiler.Core.TinyLanguage;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
+using TinyLang.Compiler.Core.Common.Attributes;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
+    [ParserOrder(3)]
+    public class WhileParser : IActionParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => WhileParsers.While(parser);
+    }
+
+    [ParserOrder(4)]
+    public class DoWhileParser : IActionParser
+    {
+        public Parser<Expr> Parse(Parser<Expr> parser) => WhileParsers.DoWhile(parser);
+    }
+
     public static class WhileParsers
     {
         public static Parser<Expr> While(Parser<Expr> parser)

@@ -12,11 +12,14 @@ using TinyLang.Compiler.Core.Parsing.Expressions.Types;
 using TinyLang.Compiler.Core.Parsing.Parsers;
 using Expr = TinyLang.Compiler.Core.Parsing.Expressions.Expr;
 using static TinyLang.Compiler.Core.Parsing.Parsers.FuncParsers;
+using System.Linq;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
 
 namespace TinyLang.Compiler.Core
 {
     public static class TinyLanguage
     {
+        public static IParserResolver ParserResolver = new ParserResolver();
 
         public static GenLanguageDef LanguageDef { get; }
 
@@ -47,15 +50,17 @@ namespace TinyLang.Compiler.Core
 
         public static Parser<Expr> GetExprValueParser(Parser<Expr> exprParser)
         {
-            var parser = choice(
-                attempt(RecordParsers.PropGetter(exprParser)),
-                attempt(FuncInvocation(exprParser)),
-                attempt(Lambda(exprParser)),
-                attempt(RecordParsers.RecordCreation(exprParser)),
+            var predefinedParsers = new[] {
                 attempt(BoolParser),
                 attempt(IntParser),
                 attempt(StrParser),
-                VarParser);
+                VarParser
+            };
+
+            var parsers = ParserResolver.ResolveParsers<IValueParser>()
+                .Select(x => attempt(x.Parse(exprParser))).Concat(predefinedParsers).ToArray();
+
+            var parser = choice(parsers);
 
             return from p in getPos
                    from e in parser

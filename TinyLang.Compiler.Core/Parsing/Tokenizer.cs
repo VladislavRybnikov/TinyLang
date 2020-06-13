@@ -8,10 +8,13 @@ using static TinyLang.Compiler.Core.Parsing.Parsers.IfElseParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.WhileParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.RecordParsers;
 using static TinyLang.Compiler.Core.Parsing.Parsers.FuncParsers;
-using static TinyLang.Compiler.Core.Parsing.Parsers.ForParsers;
+using static TinyLang.Compiler.Core.Parsing.Parsers.ForParser;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
 
 namespace TinyLang.Compiler.Core.Parsing
 {
+    public delegate Parser<Expr> ParserPipe(Parser<Expr> parser);
+
     public interface ITokenizer<T>
     {
         Parser<T> Tokenize(IParserBuilder<T> expressionParserBuilder);
@@ -42,14 +45,18 @@ namespace TinyLang.Compiler.Core.Parsing
 
             //exprParser = either(attempt(FuncInvocation(lazyp(() => exprParser))), exprParser);
 
-            var parser = Compose(exprParser, IfElse, For, While, DoWhile, FuncDefinition);
+            var actionParsers = TinyLanguage.ParserResolver.ResolveParsers<IActionParser>()
+                .Select<IParser, ParserPipe>(p => p.Parse)
+                .ToArray();
+
+            var parser = Compose(exprParser, actionParsers);
 
             parser = Add(parser, Records);
 
             return parser;
         }
 
-        private Parser<Expr> Compose(Parser<Expr> parser, params Func<Parser<Expr>, Parser<Expr>>[] funcs)
+        private Parser<Expr> Compose(Parser<Expr> parser, params ParserPipe[] funcs)
         {
             var parsers = funcs.Select(f => f(attempt(lazyp(() => parser)))).ToArray();
             parser = either(attempt(choice(parsers)), parser);

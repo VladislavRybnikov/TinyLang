@@ -10,10 +10,13 @@ using LanguageExt;
 using TinyLang.Compiler.Core.Parsing.Expressions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Constructions;
 using TinyLang.Compiler.Core.Parsing.Expressions.Types;
+using TinyLang.Compiler.Core.Parsing.Parsers.Abstract;
+using TinyLang.Compiler.Core.Common.Attributes;
 
 namespace TinyLang.Compiler.Core.Parsing.Parsers
 {
-    public static class ForParsers
+    [ParserOrder(2)]
+    public class ForParser : IActionParser
     {
         public static Parser<Expr> For(Parser<Expr> parser)
         {
@@ -42,5 +45,7 @@ namespace TinyLang.Compiler.Core.Parsing.Parsers
                    from step in parser
                    select step;
         }
+
+        public Parser<Expr> Parse(Parser<Expr> parser) => For(parser);
     }
 }
